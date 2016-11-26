@@ -5,7 +5,7 @@
 
 ### PROJECT_DIR
 ### This is the path to where you have created/cloned your project
-PROJECT_DIR       = /home/{{ YOUR USERNAME }}/MyArduinoProject
+PROJECT_DIR       = /home/jorrit/arduino_cli
 
 ### AVR_GCC_VERSION
 ### Check if the version is equal or higher than 4.9
@@ -30,8 +30,8 @@ USER_LIB_PATH     :=  $(realpath $(PROJECT_DIR)/lib)
 ### For Arduino IDE 1.6.x
 ### Both BOARD_TAG and BOARD_SUB are needed. They must be set to the board you are currently using. (i.e BOARD_TAG = uno, mega, etc. & BOARD_SUB = atmega2560, etc.)
 ### Note: for the Arduino Uno, only BOARD_TAG is mandatory and BOARD_SUB can be equal to anything
-BOARD_TAG         = mega
-BOARD_SUB         = atmega2560
+BOARD_TAG         = uno
+BOARD_SUB         = uno
 
 ### MONITOR_BAUDRATE
 ### It must be set to Serial baudrate value you are using.
@@ -62,7 +62,7 @@ endif
 
 ### MONITOR_PORT
 ### The port your board is connected to. Using an '*' tries all the ports and finds the right one.
-MONITOR_PORT      = /dev/tty.usbmodem*
+MONITOR_PORT      = /dev/ttyUSB*
 
 ### don't touch this
 CURRENT_DIR       = $(shell basename $(CURDIR))

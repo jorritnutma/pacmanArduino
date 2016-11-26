@@ -3,6 +3,7 @@
 
 //#include <utils.h>
 #include <Arduino.h>
+#include "Driver.h"
 //#include <pin_magic.h>
 
 //Technical support:goodtft@163.com
@@ -20,13 +21,13 @@
 #define RS_MASK B00000100
 
 
-class ILI9481_driver{//} : public Adafruit_GFX {;
+class ILI9481_driver : public Driver {
 
 public :
 
     ILI9481_driver();
 
-    //void drawPixel(int16_t x, int16_t y, uint16_t color);
+    void drawPixel(int16_t x, int16_t y, uint16_t color);
 
     void Lcd_Init(void);
 

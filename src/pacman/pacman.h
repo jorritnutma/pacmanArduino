@@ -12,13 +12,17 @@ class pacman
         pacman();
         virtual ~pacman();
         void updateGame();
-        pacman_renderer* getRenderer(){return render;}
+        pacmanField* loadField();
+        void setRenderer(pacman_renderer* renderer){render = renderer;}
+        Driver* getDriver(){return driver;}
 
     protected:
 
     private:
+        Driver* driver;
         pacman_renderer* render;
-        //pacmanField* field;
+        utils::position pm_pos;
+        
 };
 
 #endif // PACMAN_H

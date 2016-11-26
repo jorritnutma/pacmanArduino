@@ -1,38 +1,35 @@
 #ifndef _PACMANRENDERER
 #define _PACMANRENDERER
 
-#include <pacman_utils.h>
+#include <utils.h>
 #include "ILI9481_driver.h"
-//#include <pacmanField.h>
+#include "Driver.h"
+#include <pacmanField.h>
 
-//#define BLACK   0x0000
-//#define BLUE    0x001F
-//#define RED     0xF800
-//#define GREEN   0x07E0
-//#define CYAN    0x07FF
-//#define MAGENTA 0xF81F
-//#define YELLOW  0xFFE0
-//#define WHITE   0xFFFF
 
 class pacman_renderer
 {
 private:
 	int tileSize;
     ILI9481_driver* tft;
+    int pacman_color = 0xFFE0;
 
     int calculateTileSize(int,int);
+   	void fillCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t cornername, int16_t delta, uint16_t color);
 
 public :
 
     //pacmanRenderer(int, int, pacmanField*);
-    pacman_renderer(int, int);\
+    pacman_renderer(int, int, Driver*, pacmanField*);\
 	int getTileSize(){return tileSize;}
-	int color = ILI9341_BLACK;
-	//void drawLine(){tft->drawLine(50,50,70, 70, 0x001F);}
-	//void drawCircle(){tft->drawCircle(20,20, 10, 0x001F);}
+	void fillCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
+
 	void clearScreen(int color){tft->LCD_Clear(color);}
-	void clearScreen(){tft->LCD_Clear(ILI9341_BLACK);}
-	utils::position drawPacman( utils::position pos, utils::direction dir);
+	void clearScreen(){tft->LCD_Clear(colors::BLACK);}
+	void drawPixelTest();
+	//utils::position drawPacman( uint16_t, uint16_t, utils::direction dir);
+    utils::position drawPacman( utils::position, utils::direction);
+    
 
 
 };

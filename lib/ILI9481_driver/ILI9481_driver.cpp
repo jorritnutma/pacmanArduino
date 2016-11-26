@@ -9,7 +9,7 @@
 #define TFTWIDTH   320
 #define TFTHEIGHT  480
 
-ILI9481_driver::ILI9481_driver(){//: Adafruit_GFX(TFTWIDTH, TFTHEIGHT){
+ILI9481_driver::ILI9481_driver() : Driver (TFTWIDTH, TFTHEIGHT){
     Lcd_Init();
     for(int p=0;p<10;p++) {
         pinMode(p,OUTPUT);
@@ -27,32 +27,33 @@ ILI9481_driver::ILI9481_driver(){//: Adafruit_GFX(TFTWIDTH, TFTHEIGHT){
     Lcd_Init();
     LCD_Clear(0xf800);
 }
-//
-//void ILI9481_driver::drawPixel(int16_t x, int16_t y, uint16_t color){
-// // Clip
-//  //if((x < 0) || (y < 0) || (x >= _width) || (y >= _height)) return;
-//
-//Lcd_Write_Com(0x02c); //write_memory_start
-//  digitalWrite(LCD_RS,HIGH);
-//  digitalWrite(LCD_CS,LOW);
-//  Address_set(x,y,x,y);
-//
-//Lcd_Write_Data(color>>8);
-//Lcd_Write_Data(color);
-//
-//  digitalWrite(LCD_CS,HIGH);
-//
-////  CS_ACTIVE;
-////    setAddrWindow(x, y, _width-1, _height-1);
-////    CS_ACTIVE;
-////    CD_COMMAND;
-////    write8(0x2C);
-////    CD_DATA;
-////    write8(color >> 8); write8(color);
-////  }
-////
-////  CS_IDLE;
-//}
+
+void ILI9481_driver::drawPixel(int16_t x, int16_t y, uint16_t color){
+  
+//Clip
+if((x < 0) || (y < 0) || (x >= TFTWIDTH) || (y >= TFTWIDTH)) return;
+
+Lcd_Write_Com(0x02c); //write_memory_start
+ digitalWrite(LCD_RS,HIGH);
+ digitalWrite(LCD_CS,LOW);
+ Address_set(x,y,x,y);
+
+Lcd_Write_Data(color>>8);
+Lcd_Write_Data(color);
+
+ digitalWrite(LCD_CS,HIGH);
+
+ // CS_ACTIVE;
+ //   setAddrWindow(x, y, _width-1, _height-1);
+ //   CS_ACTIVE;
+ //   CD_COMMAND;
+ //   write8(0x2C);
+ //   CD_DATA;
+ //   write8(color >> 8); write8(color);
+ // }
+
+ // CS_IDLE;
+}
 void ILI9481_driver::Lcd_Write_Bus(unsigned char d)
 {
   PORTD = (PORTD & B00000011) | ((d) & B11111100);
