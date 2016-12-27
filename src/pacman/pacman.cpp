@@ -5,6 +5,9 @@
 #include "pacmanField.h"
 #include "Arduino.h"
 #include <Wire.h>
+#include "Serial_logger.h"
+
+Serial_logger logger;
 
 pacman::pacman()
 {
@@ -33,7 +36,7 @@ void pacman::updateGame(){
 }
 
 void setup(){
-
+   logger = Serial_logger();
 }
 
 pacmanField* pacman::loadField(){
@@ -45,8 +48,11 @@ void loop() {
 	pacman p;
 
 	p.setRenderer(new pacman_renderer(0,0, p.getDriver(), p.loadField()));
+    logger.println("Renderer added");
+    
 	while(1){
 		p.updateGame();
+        
 		//delay(1000);
 
 	}	
