@@ -11,9 +11,11 @@ class pacman
     public:
         pacman();
         virtual ~pacman();
-        void updateGame();
+        bool updateGame();
         pacmanField* loadField();
         void setRenderer(pacman_renderer* renderer){render = renderer;}
+        void pm_border_test();
+        void clearScreen();
         Driver* getDriver(){return driver;}
 
     protected:

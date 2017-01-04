@@ -8,10 +8,81 @@
 pacman_renderer::pacman_renderer(int width, int length, Driver* driver, pacmanField* field){
     tileSize = 40;
     tft = driver;
+
+    if (tileSize > static_tile_size){
+      return;
+    }
+
+    int16_t r = tileSize >> 1;
+    
+    int16_t f = 1 - r;
+    int16_t ddF_x = 1;
+    int16_t ddF_y = -2 * r;
+    int16_t x = 0;
+    int16_t y = r;
+
+    pm_borders[0] = r;
+    
+    while (x<y) {
+      if (f >= 0) {
+        y--;
+        ddF_y += 2;
+        f += ddF_y;
+      }
+      x++;
+      ddF_x += 2;
+      f += ddF_x;
+
+      pm_borders[x] = y;
+      pm_borders[y] = x;
+    }        
 }
 
 int pacman_renderer::calculateTileSize(int width, int length){
 
+}
+
+void pacman_renderer::draw_pm_border(){
+  for(int i = 0; i < tileSize >> 1 ; i++){
+    tft->drawPixel(i + 100, pm_borders[i] + 100, colors::RED);
+    tft->drawPixel(100 - i, pm_borders[i] + 100, colors::RED);
+    tft->drawPixel(i + 100, 100 - pm_borders[i], colors::RED);
+    tft->drawPixel(100 - i, 100 - pm_borders[i] , colors::RED);
+  }  
+}
+// Draw a circle outline
+void pacman_renderer::drawCircle(int16_t x0, int16_t y0, int16_t r,
+ uint16_t color) {
+  int16_t f = 1 - r;
+  int16_t ddF_x = 1;
+  int16_t ddF_y = -2 * r;
+  int16_t x = 0;
+  int16_t y = r;
+
+  tft->drawPixel(x0  , y0+r, color);
+  tft->drawPixel(x0  , y0-r, color);
+  tft->drawPixel(x0+r, y0  , color);
+  tft->drawPixel(x0-r, y0  , color);
+
+  while (x<y) {
+    if (f >= 0) {
+      y--;
+      ddF_y += 2;
+      f += ddF_y;
+    }
+    x++;
+    ddF_x += 2;
+    f += ddF_x;
+
+    tft->drawPixel(x0 + x, y0 + y, color);
+    tft->drawPixel(x0 - x, y0 + y, color);
+    tft->drawPixel(x0 + x, y0 - y, color);
+    tft->drawPixel(x0 - x, y0 - y, color);
+    tft->drawPixel(x0 + y, y0 + x, color);
+    tft->drawPixel(x0 - y, y0 + x, color);
+    tft->drawPixel(x0 + y, y0 - x, color);
+    tft->drawPixel(x0 - y, y0 - x, color);
+  }
 }
 
 void pacman_renderer::fillCircleHelper(int16_t x0, int16_t y0, int16_t r,

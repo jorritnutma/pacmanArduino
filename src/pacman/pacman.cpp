@@ -20,23 +20,33 @@ pacman::~pacman()
     //dtor
 }
 
-void pacman::updateGame(){
+bool pacman::updateGame(){
     //render->clearScreen();
-    //render->fillCircle(50, 50, 20, colors::GREEN);
-    utils::position pmpos = {150, 200};
-    
-    render->drawPacman(pm_pos, utils::DOWN);
-    
-    pm_pos.y < 460 ? pm_pos.y +=5 : pm_pos.y = 0;
-
-    //render->drawPacman(pmpos, utils::DOWN);
-    pmpos.x = 200;
-    pmpos.y = 200;
-    //render->drawPacman(pmpos, utils::LEFT);
+    //render->fillCircle(50, 50, 20, colors::GREEN);    
+    //render->drawPacman(pm_pos, utils::DOWN);
+    render->drawCircle(pm_pos.x, pm_pos.y, 20, colors::GREEN);
+    render->drawCircle(320, 100, 30, colors::GREEN);
+    if (pm_pos.y < 460){
+        pm_pos.y +=40;
+    }
+    else {
+        pm_border_test();
+        pm_pos.y = 0;
+        return false;
+    }
+    return true;
 }
 
 void setup(){
    logger = Serial_logger();
+}
+
+void pacman::pm_border_test(){
+    render->draw_pm_border();
+}
+
+void pacman::clearScreen(){
+    render->clearScreen();
 }
 
 pacmanField* pacman::loadField(){
@@ -49,13 +59,15 @@ void loop() {
 
 	p.setRenderer(new pacman_renderer(0,0, p.getDriver(), p.loadField()));
     logger.println("Renderer added");
-    
-	while(1){
-		p.updateGame();
+    p.clearScreen();
+
+	while( p.updateGame()){
         
 		//delay(1000);
 
-	}	
+	}
+
+    while(1){}
 	// Serial.println("Hello world");
 	// FooObject.firstFooMethod();
 	//delay(1000);
