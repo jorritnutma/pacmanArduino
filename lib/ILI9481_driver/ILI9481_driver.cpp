@@ -200,6 +200,13 @@ void ILI9481_driver::Rect(unsigned int x,unsigned int y,unsigned int w,unsigned 
   V_line(x+w, y  , h, c);
 }
 
+
+void ILI9481_driver::Rectf_imp(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c)
+{
+
+}
+
+
 void ILI9481_driver::Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c)
 {
   unsigned int i;

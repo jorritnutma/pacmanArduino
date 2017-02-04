@@ -32,7 +32,7 @@ public :
 	void clearScreen(){tft->LCD_Clear(colors::BLACK);}
 	void drawPixelTest();
 
-    void draw_pm_border();
+    void draw_pm_border(utils::direction);
 	//utils::position drawPacman( uint16_t, uint16_t, utils::direction dir);
     utils::position drawPacman( utils::position, utils::direction);
     void drawPacmanInit(uint16_t r);

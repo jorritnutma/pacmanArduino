@@ -6,7 +6,7 @@
 // }
 
 pacman_renderer::pacman_renderer(int width, int length, Driver* driver, pacmanField* field){
-    tileSize = 40;
+    tileSize = 39;
     tft = driver;
 
     if (tileSize > static_tile_size){
@@ -42,12 +42,31 @@ int pacman_renderer::calculateTileSize(int width, int length){
 
 }
 
-void pacman_renderer::draw_pm_border(){
+void pacman_renderer::draw_pm_border(utils::direction dir){
+  tft->V_line(200, 0, 200, colors::GREEN);
+  tft->H_line(0, 100, 300, colors::GREEN);
+  
   for(int i = 0; i < tileSize >> 1 ; i++){
-    tft->drawPixel(i + 100, pm_borders[i] + 100, colors::RED);
-    tft->drawPixel(100 - i, pm_borders[i] + 100, colors::RED);
-    tft->drawPixel(i + 100, 100 - pm_borders[i], colors::RED);
-    tft->drawPixel(100 - i, 100 - pm_borders[i] , colors::RED);
+    if (i <= pm_borders[i]){
+      tft->drawPixel(i + 200, 100 - pm_borders[i], colors::BLUE);
+      tft->drawPixel(200 - i, pm_borders[i] + 100, colors::BLUE);
+      tft->drawPixel(200 - i, 100 - pm_borders[i] , colors::BLUE);
+      
+      if (dir == utils::direction::RIGHT){
+        tft->drawPixel(i+200, 100 - i, colors::YELLOW);
+        tft->drawPixel(i+200, 100 + i, colors::YELLOW);
+      }
+      else {
+        tft->drawPixel(pm_borders[i] + 200, 100 - i, colors::YELLOW);
+        tft->drawPixel(pm_borders[i] + 200, 100 + i, colors::YELLOW);
+        
+      }
+        
+      tft->drawPixel(i + 200, 100 + pm_borders[i], colors::BLUE);
+      
+      tft->drawPixel(200 - pm_borders[i], i + 100, colors::YELLOW);
+      tft->drawPixel(200 - pm_borders[i], 100 - i , colors::YELLOW);    
+    }
   }  
 }
 // Draw a circle outline
@@ -131,7 +150,7 @@ utils::position pacman_renderer::drawPacman(utils::position pos, utils::directio
 
     uint16_t r = (tileSize) >> 1;
     
-    tft->Rectf(pos.x - r, pos.y-r, tileSize, tileSize, colors::BLACK);
+    tft->Rectf(pos.x - r, pos.y-r, tileSize, tileSize, colors::GREEN);
 
     // switch(dir){
     //   case utils::DOWN :
