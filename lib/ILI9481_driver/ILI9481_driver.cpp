@@ -32,7 +32,7 @@ ILI9481_driver::ILI9481_driver() : Driver (TFTWIDTH, TFTHEIGHT){
 void ILI9481_driver::drawPixel(int16_t x, int16_t y, uint16_t color){
   
 //Clip
-if((x < 0) || (y < 0) || (x >= TFTWIDTH) || (y >= TFTWIDTH)) return;
+if((x < 0) || (y < 0) || (x >= TFTWIDTH) || (y >= TFTHEIGHT)) return;
 
 Lcd_Write_Com(0x02c); //write_memory_start
  digitalWrite(LCD_RS,HIGH);

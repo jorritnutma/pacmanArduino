@@ -5,6 +5,9 @@
 #include "pacmanField.h"
 #include "Arduino.h"
 #include <Wire.h>
+#include "Serial_logger.h"
+
+Serial_logger logger;
 
 pacman::pacman()
 {
@@ -17,7 +20,7 @@ pacman::~pacman()
     //dtor
 }
 
-void pacman::updateGame(){
+bool pacman::updateGame(){
     //render->clearScreen();
     //render->fillCircle(50, 50, 20, colors::GREEN);
     utils::position pmpos = {150, 200};
@@ -27,11 +30,31 @@ void pacman::updateGame(){
     pm_pos.y < 460 ? pm_pos.y +=5 : pm_pos.y = 0;
 
     //render->drawPacman(pmpos, utils::DOWN);
-
+    //render->fillCircle(50, 50, 20, colors::GREEN);    
+    //render->drawPacman(pm_pos, utils::DOWN);
+    // render->drawCircle(pm_pos.x, pm_pos.y, 20, colors::GREEN);
+    // render->drawCircle(320, 100, 30, colors::GREEN);
+    // if (pm_pos.y < 460){
+    //     pm_pos.y +=40;
+    // }
+    // else {
+    //     pm_border_test();
+    //     pm_pos.y = 0;
+    //     return false;
+    // }
+    // return true;
 }
 
 void setup(){
+   logger = Serial_logger();
+}
 
+void pacman::pm_border_test(){
+    render->draw_pm_border();
+}
+
+void pacman::clearScreen(){
+    render->clearScreen();
 }
 
 pacmanField* pacman::loadField(){
@@ -47,14 +70,25 @@ void loop() {
 	pacman p;
 
 	p.setRenderer(new pacman_renderer(0,0, p.getDriver(), p.loadField()));
+<<<<<<< HEAD
 
 	p.init();
 
 	while(1){
 	 	p.updateGame();
 	// 	//delay(1000);
+=======
+    logger.println("Renderer added");
+    p.clearScreen();
 
-	}	
+	while( p.updateGame()){
+        
+		//delay(1000);
+>>>>>>> 99ff5d98ad20f669282dd539e302a913166a4634
+
+	}
+
+    while(1){}
 	// Serial.println("Hello world");
 	// FooObject.firstFooMethod();
 	//delay(1000);
