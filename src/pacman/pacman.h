@@ -15,6 +15,7 @@ class pacman
         pacmanField* loadField();
         void setRenderer(pacman_renderer* renderer){render = renderer;}
         Driver* getDriver(){return driver;}
+        void init();
 
     protected:
 

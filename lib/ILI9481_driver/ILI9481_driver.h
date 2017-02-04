@@ -25,6 +25,8 @@ class ILI9481_driver : public Driver {
 
 public :
 
+    const static int MAX_TILE_SIZE = 40;
+
     ILI9481_driver();
 
     void drawPixel(int16_t x, int16_t y, uint16_t color);
@@ -37,6 +39,9 @@ public :
     void Rect(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
     void Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
     void LCD_Clear(unsigned int j);
+    void drawPacman(uint16_t x, uint16_t y, uint16_t dx, uint16_t dy);
+    void calcPacmanBoundaries(uint16_t r);
+
     int RGB(int r,int g,int b) {return r << 16 | g << 8 | b;}
 
     int getScreenWidth(){return width;}
@@ -44,6 +49,8 @@ public :
 
 private:
     int width, length;
+    uint16_t circleBoundaries[MAX_TILE_SIZE >> 1];
+    uint16_t pacmanRadius;
 
     void Lcd_Write_Bus(unsigned char d);
 

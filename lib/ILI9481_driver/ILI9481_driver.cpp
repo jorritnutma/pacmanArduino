@@ -5,6 +5,7 @@
 // Uno port/pin : PD7 PD6 PD5 PD4 PD3 PD2 PB1 PB0
 // Mega dig. pin:  29  28  27  26  25  24  23  22
 #include <ILI9481_driver.h>
+#include <utils.h>
 
 #define TFTWIDTH   320
 #define TFTHEIGHT  480
@@ -228,6 +229,38 @@ Address_set(0,0,319,479);
   digitalWrite(LCD_CS,HIGH);
 }
 
+void ILI9481_driver::drawPacman(uint16_t x, uint16_t y, uint16_t dx, uint16_t dy){
+  uint16_t i = 0;
+
+  while (i < 20){
+    drawPixel(x+i, circleBoundaries[i], colors::GREEN);
+    i++;
+  }
+  
+}
+
+void ILI9481_driver::calcPacmanBoundaries(uint16_t r){
+
+    int16_t f     = 1 - r;
+    int16_t ddF_x = 1;
+    int16_t ddF_y = -2 * r;
+    int16_t x     = 0;
+    int16_t y     = r;
+    pacmanRadius  = r;
+
+    while (x<r) {
+        if (f >= 0) {
+          y--;
+          ddF_y += 2;
+          f     += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f     += ddF_x;
+        circleBoundaries[x] = y;
+      }
+
+}
 
 // For I/O macros that were left undefined, declare function
 // versions that reference the inline macros just once:

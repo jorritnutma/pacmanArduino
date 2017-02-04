@@ -29,6 +29,7 @@ public :
 	void drawPixelTest();
 	//utils::position drawPacman( uint16_t, uint16_t, utils::direction dir);
     utils::position drawPacman( utils::position, utils::direction);
+    void drawPacmanInit(uint16_t r);
     
 
 
