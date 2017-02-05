@@ -22,20 +22,20 @@ pacman::~pacman()
 
 bool pacman::updateGame(){
     //render->clearScreen();
-    render->fillCircle(50, 50, 20, colors::GREEN);
+    render->fillCircle(100, 50, 20, colors::GREEN);
     utils::position pmpos = {150, 200};
     
-    render->drawPacman(pm_pos, utils::DOWN);
+    //render->drawPacman(pm_pos, utils::DOWN);
     
     //pm_pos.y < 460 ? pm_pos.y +=5 : pm_pos.y = 0;
 
     //render->drawPacman(pmpos, utils::DOWN);
     //render->fillCircle(50, 50, 20, colors::GREEN);    
-    //render->drawPacman(pm_pos, utils::DOWN);
+    render->drawPacman(pm_pos, utils::LEFT);
     // render->drawCircle(pm_pos.x, pm_pos.y, 20, colors::GREEN);
     // render->drawCircle(320, 100, 30, colors::GREEN);
     if (pm_pos.y < 460){
-        pm_pos.y +=40;
+        pm_pos.y +=38;
     }
     else {
         pm_border_test();
@@ -51,6 +51,7 @@ void setup(){
 
 void pacman::pm_border_test(){
     render->draw_pm_border(utils::RIGHT);
+    render->drawPacmanPreCalc(utils::RIGHT);
 }
 
 void pacman::clearScreen(){
@@ -70,14 +71,27 @@ void loop() {
 	pacman p;
 
 	p.setRenderer(new pacman_renderer(0,0, p.getDriver(), p.loadField()));
-    logger.println("setRenderer added");
+    logger.println("Renderer added");
     p.clearScreen();
+
+    ILI9481_driver* d = p.getDriver();
+
+    uint16_t i;
+
+	for(i=1; i < 480; i += 20){
+
+	  d-> Rectf(60, i, 50, 20, colors::BLUE);
+	}
+	for(i=1; i < 480; i += 20){
+
+	  d-> Rectf_imp(1, i, 50, 20, colors::BLUE);
+	}
 
 	while( p.updateGame()){
         
-		//delay(1000);
-
+		delay(500);
 	}
+
 
     while(1){}
 	// Serial.println("Hello world");

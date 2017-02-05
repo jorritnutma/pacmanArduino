@@ -6,8 +6,10 @@
 // }
 
 pacman_renderer::pacman_renderer(int width, int length, Driver* driver, pacmanField* field){
-    tileSize = 39;
+    tileSize = 38;
     tft = driver;
+    pm_x = 200;
+    pm_y = 200;
 
     if (tileSize > static_tile_size){
       return;
@@ -45,6 +47,8 @@ int pacman_renderer::calculateTileSize(int width, int length){
 void pacman_renderer::draw_pm_border(utils::direction dir){
   tft->V_line(200, 0, 200, colors::GREEN);
   tft->H_line(0, 100, 300, colors::GREEN);
+
+  tft->V_line(100, 100, 15, colors::YELLOW);
   
   for(int i = 0; i < tileSize >> 1 ; i++){
     if (i <= pm_borders[i]){
@@ -69,6 +73,42 @@ void pacman_renderer::draw_pm_border(utils::direction dir){
     }
   }  
 }
+
+utils::position pacman_renderer::drawPacmanPreCalc(utils::direction dir){
+  uint16_t r = tileSize >> 1;
+  tft->V_line(pm_x, pm_y -r , tileSize + 1, colors::YELLOW); 
+
+  
+  for(int x = 0; x < tileSize >> 1 ; x++){
+    tft->V_line(pm_x + x, pm_y - pm_borders[x], 2*pm_borders[x]+1, colors::YELLOW); // 1
+  tft->V_line(pm_x + pm_borders[x], pm_y - x, 2*x+1, colors::YELLOW);
+  tft->V_line(pm_x - x, pm_y - pm_borders[x], 2*pm_borders[x]+1, colors::YELLOW); // 2
+  tft->V_line(pm_x - pm_borders[x], pm_y - x, 2*x+1, colors::YELLOW);
+
+      // if (i <= pm_borders[i]){
+      //   tft->drawPixel(i + 200, 100 - pm_borders[i], colors::BLUE);// 1 U
+      //   tft->drawPixel(200 - i, pm_borders[i] + 100, colors::BLUE);
+      //   tft->drawPixel(200 - i, 100 - pm_borders[i] , colors::BLUE);
+        
+      //   if (dir == utils::direction::RIGHT){
+      //     tft->drawPixel(i+200, 100 - i, colors::YELLOW); 
+      //     tft->drawPixel(i+200, 100 + i, colors::YELLOW);
+      //   }
+      //   else {
+      //     tft->drawPixel(pm_borders[i] + 200, 100 - i, colors::YELLOW);
+      //     tft->drawPixel(pm_borders[i] + 200, 100 + i, colors::YELLOW); 
+          
+      //   }
+          
+      //   tft->drawPixel(i + 200, 100 + pm_borders[i], colors::BLUE); // 1 L
+        
+      //   tft->drawPixel(200 - pm_borders[i], i + 100, colors::YELLOW);
+      //   tft->drawPixel(200 - pm_borders[i], 100 - i , colors::YELLOW);    
+      // }
+    }  
+
+}
+
 // Draw a circle outline
 void pacman_renderer::drawCircle(int16_t x0, int16_t y0, int16_t r,
  uint16_t color) {
@@ -145,69 +185,68 @@ void pacman_renderer::drawPacmanInit(uint16_t r){
 
 utils::position pacman_renderer::drawPacman(utils::position pos, utils::direction dir){
     
-  tft->drawPacman(50,50,0,0);
+  //tft->drawPacman(50,50,0,0);
 
 
     uint16_t r = (tileSize) >> 1;
     
-    tft->Rectf(pos.x - r, pos.y-r, tileSize, tileSize, colors::GREEN);
+    tft->Rectf_imp(pos.x - r, pos.y-r - tileSize, tileSize, tileSize, colors::BLACK);
 
-    // switch(dir){
-    //   case utils::DOWN :
-    //     tft->V_line(pos.x, pos.y-r, r+1, pacman_color);  
-    //     break;
-    //   case utils::UP :
-    //     tft->V_line(pos.x, pos.y-1, r, pacman_color);  
-    //     break;
-    //   case utils::LEFT :
-    //     tft->H_line(pos.x, pos.y, r+1, pacman_color);
-    //     break;
-    //   case utils::RIGHT :
-    //     tft->H_line(pos.x - r, pos.y, r +1, pacman_color);      
-    // }
+    switch(dir){
+      case utils::DOWN :
+        tft->V_line(pos.x, pos.y-r, r, pacman_color);  
+        break;
+      case utils::UP :
+        tft->V_line(pos.x, pos.y, r, pacman_color);  
+        break;
+      case utils::LEFT :
+        tft->H_line(pos.x, pos.y, r, pacman_color);
+        break;
+      case utils::RIGHT :
+        tft->H_line(pos.x - r, pos.y, r, pacman_color);      
+    }
     
     
-    // int16_t f     = 1 - r;
-    // int16_t ddF_x = 1;
-    // int16_t ddF_y = -2 * r;
-    // int16_t x     = 0;
-    // int16_t y     = r;
+    int16_t f     = 1 - r;
+    int16_t ddF_x = 1;
+    int16_t ddF_y = -2 * r;
+    int16_t x     = 0;
+    int16_t y     = r;
 
-    // while (x<y) {
-    //     if (f >= 0) {
-    //       y--;
-    //       ddF_y += 2;
-    //       f     += ddF_y;
-    //     }
-    //     x++;
-    //     ddF_x += 2;
-    //     f     += ddF_x; 
+    while (x<y) {
+        if (f >= 0) {
+          y--;
+          ddF_y += 2;
+          f     += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f     += ddF_x; 
 
-    //     switch (dir) {
-    //     case utils::DOWN :
-    //         tft->V_line(pos.x+x, pos.y-y, y+x, pacman_color); //inner right
-    //         tft->V_line(pos.x+y, pos.y-x, 2*x+1, pacman_color); //outer right
-    //         tft->V_line(pos.x-x, pos.y-y, y+x, pacman_color); //inner left
-    //         tft->V_line(pos.x-y, pos.y-x, 2*x+1, pacman_color); //outer left
+        switch (dir) {
+        case utils::DOWN :
+            tft->V_line(pos.x+x, pos.y-y, y+x, pacman_color); //inner right
+            tft->V_line(pos.x+y, pos.y-x, 2*x+1, pacman_color); //outer right
+            tft->V_line(pos.x-x, pos.y-y, y+x, pacman_color); //inner left
+            tft->V_line(pos.x-y, pos.y-x, 2*x+1, pacman_color); //outer left
+            break;
+        case utils::UP :
+            tft->V_line(pos.x+x, pos.y-x-1, x+y, pacman_color); //inner right
+            tft->V_line(pos.x+y, pos.y-x, 2*x, pacman_color);   //outer right
+            tft->V_line(pos.x-x, pos.y-x-1, x+y, pacman_color);   //inner left
+            tft->V_line(pos.x-y, pos.y-x, 2*x, pacman_color);   //outer left
+            break;
+        case utils::RIGHT :
+            tft->H_line(pos.x-y, pos.y+y, x+y+1, pacman_color);
+            break;
+        case utils::LEFT:
+            tft->H_line(pos.x-x, pos.y+x, x+y, pacman_color); //inner above
+            tft->H_line(pos.x-x, pos.y+y, 2*x, pacman_color);   //outer above
+            tft->H_line(pos.x-x, pos.y-x, x+y, pacman_color);   //inner below
+            tft->H_line(pos.x-x, pos.y-y, 2*x, pacman_color);   //outer below
+            break;
 
-    //         break;
-    //     case utils::UP :
-    //         tft->V_line(pos.x+x, pos.y-x-1, x+y, pacman_color); //inner right
-    //         tft->V_line(pos.x+y, pos.y-x, 2*x, pacman_color);   //outer right
-    //         tft->V_line(pos.x-x, pos.y-x-1, x+y, pacman_color);   //inner left
-    //         tft->V_line(pos.x-y, pos.y-x, 2*x, pacman_color);   //outer left
-    //         break;
-    //     case utils::RIGHT :
-    //         tft->H_line(pos.x-y, pos.y+y, x+y+1, pacman_color);
-    //         break;
-    //     case utils::LEFT:
-    //         tft->H_line(pos.x-x, pos.y+x, x+y, pacman_color); //inner above
-    //         tft->H_line(pos.x-x, pos.y+y, 2*x, pacman_color);   //outer above
-    //         tft->H_line(pos.x-x, pos.y-x, x+y, pacman_color);   //inner below
-    //         tft->H_line(pos.x-x, pos.y-y, 2*x, pacman_color);   //outer below
-    //         break;
+        }
 
-    //     }
-
-    // }
+    }
 }

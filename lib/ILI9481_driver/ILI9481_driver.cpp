@@ -159,14 +159,13 @@ void ILI9481_driver::Lcd_Init(void)
 
 void ILI9481_driver::H_line(unsigned int x, unsigned int y, unsigned int l, unsigned int c)
 {
-  unsigned int i,j;
+  unsigned int i;
   Lcd_Write_Com(0x02c); //write_memory_start
   digitalWrite(LCD_RS,HIGH);
   digitalWrite(LCD_CS,LOW);
   l=l+x;
   Address_set(x,y,l,y);
-  j=l;
-  for(i=1;i<=j;i++)
+  for(i=1;i<=l;i++)
   {
     Lcd_Write_Data(c>>8);
     Lcd_Write_Data(c);
@@ -176,15 +175,13 @@ void ILI9481_driver::H_line(unsigned int x, unsigned int y, unsigned int l, unsi
 
 void ILI9481_driver::V_line(unsigned int x, unsigned int y, unsigned int l, unsigned int c)
 {
-  unsigned int i,j;
+  unsigned int i;
   Lcd_Write_Com(0x02c); //write_memory_start
   digitalWrite(LCD_RS,HIGH);
   digitalWrite(LCD_CS,LOW);
   l=l+y;
   Address_set(x,y,x,l);
-  //j=l*2;
-  j = l;
-  for(i=1;i<=j;i++)
+  for(i=y;i<=l;i++)
   {
     Lcd_Write_Data(c>>8);
     Lcd_Write_Data(c);
@@ -203,6 +200,23 @@ void ILI9481_driver::Rect(unsigned int x,unsigned int y,unsigned int w,unsigned 
 
 void ILI9481_driver::Rectf_imp(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c)
 {
+
+  unsigned int i,j;
+  Lcd_Write_Com(0x02c); //write_memory_start
+  digitalWrite(LCD_RS,HIGH);
+  digitalWrite(LCD_CS,LOW);
+  h=h+y;
+  w=w+x;
+  Address_set(x,y,w,h);
+  
+  for(i = y; i <= h;i++)
+  {
+    for(j=x; j <= w; j++){
+      Lcd_Write_Data(c>>8);
+      Lcd_Write_Data(c);
+    }
+  }
+  digitalWrite(LCD_CS,HIGH);
 
 }
 
