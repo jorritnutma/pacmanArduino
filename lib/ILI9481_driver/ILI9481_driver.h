@@ -4,6 +4,8 @@
 //#include <utils.h>
 #include <Arduino.h>
 #include "Driver.h"
+#include "renderer_elem.h"
+#include "utils.h"
 //#include <pin_magic.h>
 
 //Technical support:goodtft@163.com
@@ -39,10 +41,9 @@ public :
     void Rect(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
     void Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
     void Rectf_imp(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
+    void drawPacman(uint8_t* pm_borders, renderer_elem* pm_prop, utils::direction dir);
     void LCD_Clear(unsigned int j);
-    void drawPacman(uint16_t x, uint16_t y, uint16_t dx, uint16_t dy);
-    void calcPacmanBoundaries(uint16_t r);
-
+    
     int RGB(int r,int g,int b) {return r << 16 | g << 8 | b;}
 
     int getScreenWidth(){return width;}
@@ -51,7 +52,6 @@ public :
 private:
     int width, length;
     uint16_t circleBoundaries[MAX_TILE_SIZE >> 1];
-    uint16_t pacmanRadius;
 
     void Lcd_Write_Bus(unsigned char d);
 

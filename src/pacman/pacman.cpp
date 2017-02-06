@@ -12,7 +12,8 @@ Serial_logger logger;
 pacman::pacman()
 {
     driver = new ILI9481_driver();
-    pm_pos = {20,20};
+    pm_pos = {1,1};
+    pm_dir = utils::DOWN;
 }
 
 pacman::~pacman()
@@ -22,26 +23,23 @@ pacman::~pacman()
 
 bool pacman::updateGame(){
     //render->clearScreen();
-    render->fillCircle(100, 50, 20, colors::GREEN);
-    utils::position pmpos = {150, 200};
-    
-    //render->drawPacman(pm_pos, utils::DOWN);
-    
-    //pm_pos.y < 460 ? pm_pos.y +=5 : pm_pos.y = 0;
-
     //render->drawPacman(pmpos, utils::DOWN);
     //render->fillCircle(50, 50, 20, colors::GREEN);    
-    render->drawPacman(pm_pos, utils::LEFT);
+	render->drawPacmanPreCalc(utils::RIGHT);
+	pm_pos = render->drawPacman(pm_dir);
+	if (pm_pos.y == 5)
+	{
+		pm_dir = utils::UP;
+		logger.println("turning upwards");
+	}
+	else if(pm_pos.y == 1){
+		pm_dir = utils::DOWN;
+		logger.println("turning downwards");
+	}
+
     // render->drawCircle(pm_pos.x, pm_pos.y, 20, colors::GREEN);
     // render->drawCircle(320, 100, 30, colors::GREEN);
-    if (pm_pos.y < 460){
-        pm_pos.y +=38;
-    }
-    else {
-        pm_border_test();
-        pm_pos.y = 0;
-        return false;
-    }
+    
     return true;
 }
 
@@ -50,7 +48,7 @@ void setup(){
 }
 
 void pacman::pm_border_test(){
-    render->draw_pm_border(utils::RIGHT);
+    render->draw_pm_border(utils::LEFT);
     render->drawPacmanPreCalc(utils::RIGHT);
 }
 
@@ -63,7 +61,7 @@ pacmanField* pacman::loadField(){
 }
 
 void pacman::init(){
-	render->drawPacmanInit(20);
+	render->drawPacmanInit(19);
 }
 
 void loop() {
@@ -73,23 +71,25 @@ void loop() {
 	p.setRenderer(new pacman_renderer(0,0, p.getDriver(), p.loadField()));
     logger.println("Renderer added");
     p.clearScreen();
-
+    p.init();
     ILI9481_driver* d = p.getDriver();
 
     uint16_t i;
 
 	for(i=1; i < 480; i += 20){
 
-	  d-> Rectf(60, i, 50, 20, colors::BLUE);
+	  d-> Rectf(60, i, 50, 20, colors::GREEN);
 	}
 	for(i=1; i < 480; i += 20){
 
-	  d-> Rectf_imp(1, i, 50, 20, colors::BLUE);
+	  d-> Rectf_imp(120, i, 50, 20, colors::BLUE);
 	}
+
+	p.pm_border_test();
 
 	while( p.updateGame()){
         
-		delay(500);
+		delay(50);
 	}
 
 

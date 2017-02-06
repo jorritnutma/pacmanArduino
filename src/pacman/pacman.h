@@ -25,7 +25,7 @@ class pacman
         Driver* driver;
         pacman_renderer* render;
         utils::position pm_pos;
-        
+        utils::direction pm_dir;
 };
 
 #endif // PACMAN_H

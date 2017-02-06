@@ -220,7 +220,6 @@ void ILI9481_driver::Rectf_imp(unsigned int x,unsigned int y,unsigned int w,unsi
 
 }
 
-
 void ILI9481_driver::Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c)
 {
   unsigned int i;
@@ -250,38 +249,68 @@ Address_set(0,0,319,479);
   digitalWrite(LCD_CS,HIGH);
 }
 
-void ILI9481_driver::drawPacman(uint16_t x, uint16_t y, uint16_t dx, uint16_t dy){
-  uint16_t i = 0;
 
-  while (i < 20){
-    drawPixel(x+i, circleBoundaries[i], colors::GREEN);
-    i++;
-  }
+//TODO: to be moved to a subclass that only contians pacman stuff!!
+
+void ILI9481_driver::drawPacman(uint8_t* pm_borders, renderer_elem* pm_prop, utils::direction dir)
+{
   
-}
+  //Rectf_imp(pm_prop->getXpos(), pm_prop->getYpos(), 50,  50, colors::RED );
 
-void ILI9481_driver::calcPacmanBoundaries(uint16_t r){
+  unsigned int i,j,k;
+  Lcd_Write_Com(0x02c); //write_memory_start
+  digitalWrite(LCD_RS,HIGH);
+  digitalWrite(LCD_CS,LOW);
+  
+  uint16_t x = pm_prop->getXpos();
+  uint16_t y = pm_prop->getYpos();
+  uint16_t h = y + pm_prop->getSize();
+  uint16_t w = x +pm_prop->getSize();
+  uint16_t r = pm_prop->getSize() >> 1;
+  uint16_t c = pm_prop->getColor();
+    
+  switch (dir){
+    case utils::DOWN :
+      h += pm_prop->getStepSize();
+      break;
+  }
 
-    int16_t f     = 1 - r;
-    int16_t ddF_x = 1;
-    int16_t ddF_y = -2 * r;
-    int16_t x     = 0;
-    int16_t y     = r;
-    pacmanRadius  = r;
-
-    while (x<r) {
-        if (f >= 0) {
-          y--;
-          ddF_y += 2;
-          f     += ddF_y;
-        }
-        x++;
-        ddF_x += 2;
-        f     += ddF_x;
-        circleBoundaries[x] = y;
+  digitalWrite(LCD_RS,HIGH);
+  digitalWrite(LCD_CS,LOW);
+  
+  Address_set(x, y, w, h);
+  
+  for(i = y; i <= h;i++)
+  {
+    k=r-(i-y);
+    for(j=x; j <= w; j++){
+      if ( j > x + r - pm_borders[k] && j < x + r + pm_borders[k] && i - y < r){
+        Lcd_Write_Data(c>>8);
+        Lcd_Write_Data(c);
+      }
+      else {
+        Lcd_Write_Data(colors::BLACK>>8);
+        Lcd_Write_Data(colors::BLACK); 
       }
 
+    }
+  }
+
+  // uint16_t r = tileSize >> 1;
+  // tft->V_line(pm_x, pm_y -r , tileSize + 1, colors::YELLOW); 
+
+  
+  // for(int x = 0; x < tileSize >> 1 ; x++){
+  //   tft->V_line(pm_x + x, pm_y - pm_borders[x], 2*pm_borders[x]+1, colors::YELLOW); // 1
+  //   tft->V_line(pm_x + pm_borders[x], pm_y - x, 2*x+1, colors::YELLOW);
+  //   tft->V_line(pm_x - x, pm_y - pm_borders[x], 2*pm_borders[x]+1, colors::YELLOW); // 2
+  //   tft->V_line(pm_x - pm_borders[x], pm_y - x, 2*x+1, colors::YELLOW);
+
+
+  digitalWrite(LCD_CS,HIGH);
+
 }
+
 
 // For I/O macros that were left undefined, declare function
 // versions that reference the inline macros just once:
