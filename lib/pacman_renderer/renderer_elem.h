@@ -2,7 +2,7 @@
 #define RENDERER_ELEM_H
 
 #include <Arduino.h>
-
+#include "utils.h"
 class renderer_elem{
 
 protected :
@@ -10,6 +10,7 @@ protected :
 	uint8_t size;
 	uint8_t step_size;
 	uint16_t color;
+	utils::direction prev_dir;
 
 public :
 	renderer_elem(uint8_t, uint8_t, uint16_t);
@@ -27,6 +28,9 @@ public :
 
 	uint8_t getStepSize(){return step_size;}
 	void setStepSize(uint8_t step_size_n){step_size = step_size_n;}
+
+	utils::direction getPrevDir(){return prev_dir;}
+	void setPrevDir(utils::direction dir) {prev_dir = dir;}
 };
 
 #endif //RENDERER_ELEM_H

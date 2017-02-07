@@ -1,6 +1,6 @@
 #include <pacman_renderer.h>
 #include <Driver.h>
-#include <renderer_elem.h>
+#include <renderer_elem_pm.h>
 
 // pacman_renderer::pacman_renderer(int width, int length, pacmanField* field){
 //         tileSize = 1;
@@ -10,9 +10,10 @@ pacman_renderer::pacman_renderer(int width, int length, Driver* driver, pacmanFi
     
     tileSize = 39;
     tft = driver;
-    pm_x = 200;
-    pm_y = 200;
-    pm_prop = new renderer_elem(26, 5, colors::YELLOW);
+    pm_prop = new renderer_elem_pm(26, 5, colors::YELLOW);
+    pm_prop->setXpos(10);
+    pm_prop->setYpos(50);
+    pm_prop->setPrevDir(utils::DOWN);
     bg_color=colors::BLACK;
 }
 
@@ -57,7 +58,7 @@ utils::position pacman_renderer::drawPacmanPreCalc(utils::direction dir){
   uint16_t y0 = pm_prop->getYpos();
   
   tft->drawPacman(pm_borders, pm_prop, dir, bg_color);
-
+  pm_prop->setPrevDir(dir);
   switch (dir){
     case utils::DOWN :
       y0 += pm_prop->getStepSize();
@@ -75,15 +76,20 @@ utils::position pacman_renderer::drawPacmanPreCalc(utils::direction dir){
   pm_prop->setXpos(x0);
   pm_prop->setYpos(y0);
   
-  utils::position pos_n = {2,2};
+  utils::position pos_n = {6,6};
 
-  if(pm_prop->getYpos() > 300 ){
-    pos_n.y=5;
+  if(pm_prop->getYpos() > 300 && pm_prop->getXpos() < 20 ){
+    pos_n.y=2;
   }
-  else if (pm_prop->getYpos() < 20){
+  else if (pm_prop->getYpos() > 300 && pm_prop->getXpos() > 200){
+    pos_n.y=3;
+  }
+  else if (pm_prop->getYpos() <20 && pm_prop->getXpos() > 200){
+    pos_n.y=4;
+  }
+  else if (pm_prop->getYpos() < 20 && pm_prop->getXpos() < 20){
     pos_n.y=1;
   }
-  
   return pos_n;
 }
 
@@ -151,7 +157,7 @@ void pacman_renderer::drawPacmanInit(){
 }
 
 
-
+/*OBSOLETE!!!
 utils::position pacman_renderer::drawPacman(utils::direction dir){
 
     uint16_t r = (pm_prop->getSize()) >> 1;
@@ -235,3 +241,4 @@ utils::position pacman_renderer::drawPacman(utils::direction dir){
     
     return pos_n;
 }
+*/

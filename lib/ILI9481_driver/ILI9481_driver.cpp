@@ -10,6 +10,9 @@
 #define TFTWIDTH   320
 #define TFTHEIGHT  480
 
+//TODO: to be moven togher with the drawtriangle function
+#define _swap_int16_t(a, b) { int16_t t = a; a = b; b = t; }
+
 ILI9481_driver::ILI9481_driver() : Driver (TFTWIDTH, TFTHEIGHT){
     Lcd_Init();
     for(int p=0;p<10;p++) {
@@ -249,16 +252,90 @@ void ILI9481_driver::LCD_Clear(unsigned int j)
   digitalWrite(LCD_CS,HIGH);
 }
 
+//TODO: to be moved to some adafruit_GFX like class with sophisticated drawing functions
+void ILI9481_driver::fillTriangle(int16_t x0, int16_t y0,
+ int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color) {
+
+  int16_t a, b, y, last;
+
+  // Sort coordinates by Y order (y2 >= y1 >= y0)
+  if (y0 > y1) {
+    _swap_int16_t(y0, y1); _swap_int16_t(x0, x1);
+  }
+  if (y1 > y2) {
+    _swap_int16_t(y2, y1); _swap_int16_t(x2, x1);
+  }
+  if (y0 > y1) {
+    _swap_int16_t(y0, y1); _swap_int16_t(x0, x1);
+  }
+
+  if(y0 == y2) { // Handle awkward all-on-same-line case as its own thing
+    a = b = x0;
+    if(x1 < a)      a = x1;
+    else if(x1 > b) b = x1;
+    if(x2 < a)      a = x2;
+    else if(x2 > b) b = x2;
+    H_line(a, y0, b-a+1, color);
+    return;
+  }
+
+  int16_t
+    dx01 = x1 - x0,
+    dy01 = y1 - y0,
+    dx02 = x2 - x0,
+    dy02 = y2 - y0,
+    dx12 = x2 - x1,
+    dy12 = y2 - y1;
+  int32_t
+    sa   = 0,
+    sb   = 0;
+
+  // For upper part of triangle, find scanline crossings for segments
+  // 0-1 and 0-2.  If y1=y2 (flat-bottomed triangle), the scanline y1
+  // is included here (and second loop will be skipped, avoiding a /0
+  // error there), otherwise scanline y1 is skipped here and handled
+  // in the second loop...which also avoids a /0 error here if y0=y1
+  // (flat-topped triangle).
+  if(y1 == y2) last = y1;   // Include y1 scanline
+  else         last = y1-1; // Skip it
+
+  for(y=y0; y<=last; y++) {
+    a   = x0 + sa / dy01;
+    b   = x0 + sb / dy02;
+    sa += dx01;
+    sb += dx02;
+    /* longhand:
+    a = x0 + (x1 - x0) * (y - y0) / (y1 - y0);
+    b = x0 + (x2 - x0) * (y - y0) / (y2 - y0);
+    */
+    if(a > b) _swap_int16_t(a,b);
+    H_line(a, y, b-a+1, color);
+  }
+
+  // For lower part of triangle, find scanline crossings for segments
+  // 0-2 and 1-2.  This loop is skipped if y1=y2.
+  sa = dx12 * (y - y1);
+  sb = dx02 * (y - y0);
+  for(; y<=y2; y++) {
+    a   = x1 + sa / dy12;
+    b   = x0 + sb / dy02;
+    sa += dx12;
+    sb += dx02;
+    /* longhand:
+    a = x1 + (x2 - x1) * (y - y1) / (y2 - y1);
+    b = x0 + (x2 - x0) * (y - y0) / (y2 - y0);
+    */
+    if(a > b) _swap_int16_t(a,b);
+    H_line(a, y, b-a+1, color);
+  }
+}
 
 //TODO: to be moved to a subclass that only contians pacman stuff!!
 
-void ILI9481_driver::drawPacman(uint8_t* pm_borders, renderer_elem* pm_prop, utils::direction dir, uint16_t bg_color)
+void ILI9481_driver::drawPacman(uint8_t* pm_borders, renderer_elem_pm* pm_prop, utils::direction dir, uint16_t bg_color)
 {
 
   unsigned int i,j,k;
-  Lcd_Write_Com(0x02c); //write_memory_start
-  digitalWrite(LCD_RS,HIGH);
-  digitalWrite(LCD_CS,LOW);
   
   uint16_t x = pm_prop->getXpos() ;
   uint16_t y = pm_prop->getYpos();
@@ -267,22 +344,9 @@ void ILI9481_driver::drawPacman(uint8_t* pm_borders, renderer_elem* pm_prop, uti
   uint16_t r = pm_prop->getSize() >> 1;
   uint8_t c = (uint8_t) pm_prop->getColor();
   uint8_t c_high = (uint8_t) (pm_prop->getColor() >> 8);
-    
-  switch (dir){
-    case utils::DOWN :
-      Rectf_imp(x, y- pm_prop->getStepSize(), pm_prop->getSize(), pm_prop->getStepSize(), bg_color);
-      break;
-    case utils::UP :
-      Rectf_imp(x, y+pm_prop->getSize(), pm_prop->getSize(), pm_prop->getStepSize(), bg_color);
-      break;
-    case utils::RIGHT :
-      Rectf_imp(x - pm_prop->getStepSize(), y, pm_prop->getStepSize(), pm_prop->getSize(), bg_color);
-      break;
-    case utils::LEFT :
-      Rectf_imp(x - pm_prop->getSize(), y, pm_prop->getStepSize(), pm_prop->getSize(), bg_color);
-      break;      
-  }
+      
 
+  Lcd_Write_Com(0x02c); //write_memory_start
   digitalWrite(LCD_RS,HIGH);
   digitalWrite(LCD_CS,LOW);
   
@@ -307,18 +371,48 @@ void ILI9481_driver::drawPacman(uint8_t* pm_borders, renderer_elem* pm_prop, uti
     }
   }
 
-  // uint16_t r = tileSize >> 1;
-  // tft->V_line(pm_x, pm_y -r , tileSize + 1, colors::YELLOW); 
-
-  
-  // for(int x = 0; x < tileSize >> 1 ; x++){
-  //   tft->V_line(pm_x + x, pm_y - pm_borders[x], 2*pm_borders[x]+1, colors::YELLOW); // 1
-  //   tft->V_line(pm_x + pm_borders[x], pm_y - x, 2*x+1, colors::YELLOW);
-  //   tft->V_line(pm_x - x, pm_y - pm_borders[x], 2*pm_borders[x]+1, colors::YELLOW); // 2
-  //   tft->V_line(pm_x - pm_borders[x], pm_y - x, 2*x+1, colors::YELLOW);
-
-
   digitalWrite(LCD_CS,HIGH);
+  
+  uint16_t x0, y0, x1, y1;
+  switch (pm_prop->getPrevDir()){
+    case utils::DOWN :
+      Rectf_imp(x, y - pm_prop->getStepSize(), pm_prop->getSize(), pm_prop->getStepSize() - 1, bg_color);
+      x0 = x + (r >> 1);
+      y0 = y + pm_prop->getSize();
+      x1 = x + r + (r>>1);
+      y1 = y + pm_prop->getSize();
+      break;
+    case utils::UP :
+      Rectf_imp(x, y+pm_prop->getSize()+1, pm_prop->getSize(), pm_prop->getStepSize(), bg_color);
+      x0 = x + (r >> 1);
+      y0 = y;
+      x1 = x + r + (r>>1);
+      y1 = y;
+      break;
+    case utils::RIGHT :
+      Rectf_imp(x - pm_prop->getStepSize(), y, pm_prop->getStepSize() - 1, pm_prop->getSize(), bg_color);
+      x0 = x + pm_prop->getSize();
+      y0 = y + (r>>1);
+      x1 = x + pm_prop->getSize();
+      y1 = y + r + (r>>1);
+      break;
+    case utils::LEFT :
+      Rectf_imp(x + pm_prop->getSize() + 1, y, pm_prop->getStepSize(), pm_prop->getSize(), bg_color);
+      x0 = x;
+      y0 = y + (r>>1);
+      x1 = x;
+      y1 = y + r + (r>>1);
+      break;      
+  }
+
+  if(pm_prop->getMouthOpen()){
+    fillTriangle(x0, y0, x + r, y + r, x1, y1, bg_color);
+    pm_prop->setMouthOpen(false);
+  }
+  else {
+    pm_prop->setMouthOpen(true);
+  }
+
 
 }
 

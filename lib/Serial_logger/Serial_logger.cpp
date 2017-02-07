@@ -17,6 +17,6 @@ void Serial_logger::println(char* msg){
     Serial.println(msg);
 }
 
-void Serial_logger::println(int msg){
+void Serial_logger::println(uint8_t msg){
     Serial.println(msg);
 }

@@ -9,7 +9,7 @@ class Serial_logger{
         void print(char* msg);
         void print(int);
         void println(char*);
-        void println(int);
+        void println(uint8_t);
 };
 
 #endif //_SERIAL_LOGGER

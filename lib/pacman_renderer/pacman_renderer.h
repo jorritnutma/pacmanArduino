@@ -5,7 +5,7 @@
 #include "ILI9481_driver.h"
 #include "Driver.h"
 #include <pacmanField.h>
-#include "renderer_elem.h"
+#include "renderer_elem_pm.h"
 
 class pacman_renderer
 {
@@ -18,7 +18,7 @@ private:
     uint8_t pm_borders[static_tile_size >> 1];
     uint16_t pm_x, pm_y; //These are still used by the precalc renderingfunction. TODO: remove!
     uint16_t bg_color;
-    renderer_elem* pm_prop;   
+    renderer_elem_pm* pm_prop;   
 
     int calculateTileSize(int,int);
 

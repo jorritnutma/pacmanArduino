@@ -3,7 +3,7 @@
 
 #include "pacman_renderer.h"
 //#include<pacmanField.h>
-//#include "pacman_utils.h"
+#include "Arduino.h"
 
 
 class pacman
@@ -13,6 +13,7 @@ class pacman
         virtual ~pacman();
         bool updateGame();
         pacmanField* loadField();
+        pacmanField* genTestField(uint8_t, uint8_t);
         void setRenderer(pacman_renderer* renderer){render = renderer;}
         void pm_border_test();
         void clearScreen();

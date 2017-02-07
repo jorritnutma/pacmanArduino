@@ -4,7 +4,7 @@
 //#include <utils.h>
 #include <Arduino.h>
 #include "Driver.h"
-#include "renderer_elem.h"
+#include "renderer_elem_pm.h"
 #include "utils.h"
 //#include <pin_magic.h>
 
@@ -41,7 +41,8 @@ public :
     void Rect(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
     void Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
     void Rectf_imp(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
-    void drawPacman(uint8_t* pm_borders, renderer_elem* pm_prop, utils::direction dir, uint16_t);
+    void fillTriangle(int16_t x0, int16_t y0,int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
+    void drawPacman(uint8_t* pm_borders, renderer_elem_pm* pm_prop, utils::direction dir, uint16_t);
     void LCD_Clear(unsigned int j);
     
     int RGB(int r,int g,int b) {return r << 16 | g << 8 | b;}
