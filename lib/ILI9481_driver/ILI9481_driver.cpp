@@ -237,7 +237,7 @@ void ILI9481_driver::LCD_Clear(unsigned int j)
   Lcd_Write_Com(0x02c); //write_memory_start
   digitalWrite(LCD_RS,HIGH);
   digitalWrite(LCD_CS,LOW);
-Address_set(0,0,319,479);
+  Address_set(0,0,319,479);
 
   for(i=0;i<320;i++)
     for(m=0;m<480;m++)
@@ -252,47 +252,58 @@ Address_set(0,0,319,479);
 
 //TODO: to be moved to a subclass that only contians pacman stuff!!
 
-void ILI9481_driver::drawPacman(uint8_t* pm_borders, renderer_elem* pm_prop, utils::direction dir)
+void ILI9481_driver::drawPacman(uint8_t* pm_borders, renderer_elem* pm_prop, utils::direction dir, uint16_t bg_color)
 {
-  
-  //Rectf_imp(pm_prop->getXpos(), pm_prop->getYpos(), 50,  50, colors::RED );
 
   unsigned int i,j,k;
   Lcd_Write_Com(0x02c); //write_memory_start
   digitalWrite(LCD_RS,HIGH);
   digitalWrite(LCD_CS,LOW);
   
-  uint16_t x = pm_prop->getXpos();
+  uint16_t x = pm_prop->getXpos() ;
   uint16_t y = pm_prop->getYpos();
   uint16_t h = y + pm_prop->getSize();
-  uint16_t w = x +pm_prop->getSize();
+  uint16_t w = x + pm_prop->getSize();
   uint16_t r = pm_prop->getSize() >> 1;
-  uint16_t c = pm_prop->getColor();
+  uint8_t c = (uint8_t) pm_prop->getColor();
+  uint8_t c_high = (uint8_t) (pm_prop->getColor() >> 8);
     
   switch (dir){
     case utils::DOWN :
-      h += pm_prop->getStepSize();
+      Rectf_imp(x, y- pm_prop->getStepSize(), pm_prop->getSize(), pm_prop->getStepSize(), bg_color);
       break;
+    case utils::UP :
+      Rectf_imp(x, y+pm_prop->getSize(), pm_prop->getSize(), pm_prop->getStepSize(), bg_color);
+      break;
+    case utils::RIGHT :
+      Rectf_imp(x - pm_prop->getStepSize(), y, pm_prop->getStepSize(), pm_prop->getSize(), bg_color);
+      break;
+    case utils::LEFT :
+      Rectf_imp(x - pm_prop->getSize(), y, pm_prop->getStepSize(), pm_prop->getSize(), bg_color);
+      break;      
   }
 
   digitalWrite(LCD_RS,HIGH);
   digitalWrite(LCD_CS,LOW);
   
   Address_set(x, y, w, h);
-  
-  for(i = y; i <= h;i++)
-  {
-    k=r-(i-y);
-    for(j=x; j <= w; j++){
-      if ( j > x + r - pm_borders[k] && j < x + r + pm_borders[k] && i - y < r){
-        Lcd_Write_Data(c>>8);
+
+  for (i = 0; i <= pm_prop->getSize(); i++) {
+    if ( i < r ) {
+      k = r-i ;
+    }
+    else {
+      k = i-r;
+    }
+    for(j=0; j <= pm_prop->getSize(); j++){
+      if ( j >= r - pm_borders[k] && j <= r + pm_borders[k] ){
+        Lcd_Write_Data(c_high);
         Lcd_Write_Data(c);
       }
       else {
-        Lcd_Write_Data(colors::BLACK>>8);
-        Lcd_Write_Data(colors::BLACK); 
+        Lcd_Write_Data(bg_color>>8);
+        Lcd_Write_Data(bg_color); 
       }
-
     }
   }
 

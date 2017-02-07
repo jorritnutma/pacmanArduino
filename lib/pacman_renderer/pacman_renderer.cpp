@@ -12,7 +12,8 @@ pacman_renderer::pacman_renderer(int width, int length, Driver* driver, pacmanFi
     tft = driver;
     pm_x = 200;
     pm_y = 200;
-    pm_prop = new renderer_elem(20, 5, colors::YELLOW);
+    pm_prop = new renderer_elem(26, 5, colors::YELLOW);
+    bg_color=colors::BLACK;
 }
 
 int pacman_renderer::calculateTileSize(int width, int length){
@@ -50,12 +51,40 @@ void pacman_renderer::draw_pm_border(utils::direction dir){
 }
 
 utils::position pacman_renderer::drawPacmanPreCalc(utils::direction dir){
-  renderer_elem* pm_prop_test = new renderer_elem(38, 5, colors::YELLOW);
-  pm_prop_test->setXpos(pm_x);
-  pm_prop_test->setYpos(pm_y);
 
-  tft->drawPacman(pm_borders, pm_prop_test, dir);
-  pm_y+=5;
+
+  uint16_t x0 = pm_prop->getXpos();
+  uint16_t y0 = pm_prop->getYpos();
+  
+  tft->drawPacman(pm_borders, pm_prop, dir, bg_color);
+
+  switch (dir){
+    case utils::DOWN :
+      y0 += pm_prop->getStepSize();
+      break;
+    case utils::UP :
+      y0 -= pm_prop->getStepSize();
+      break;
+    case utils::RIGHT :
+      x0 += pm_prop->getStepSize();
+      break;
+    case utils::LEFT :
+      x0 -= pm_prop->getStepSize();
+      break;  
+  }
+  pm_prop->setXpos(x0);
+  pm_prop->setYpos(y0);
+  
+  utils::position pos_n = {2,2};
+
+  if(pm_prop->getYpos() > 300 ){
+    pos_n.y=5;
+  }
+  else if (pm_prop->getYpos() < 20){
+    pos_n.y=1;
+  }
+  
+  return pos_n;
 }
 
 // Draw a circle outline
@@ -93,20 +122,18 @@ void pacman_renderer::drawCircle(int16_t x0, int16_t y0, int16_t r,
   }
 }
 
-void pacman_renderer::drawPacmanInit(uint16_t r){
-  if (r > static_tile_size >> 1){
+void pacman_renderer::drawPacmanInit(){
+  if (pm_prop->getSize() > static_tile_size){
     return;
   }
-
-  //tileSize = r << 1;
   
-  int16_t f = 1 - r;
+  int16_t f = 1 - (pm_prop->getSize() >> 1);
   int16_t ddF_x = 1;
-  int16_t ddF_y = -2 * r;
+  int16_t ddF_y = -2 * (pm_prop->getSize() >> 1);
   int16_t x = 0;
-  int16_t y = r;
+  int16_t y = (pm_prop->getSize() >> 1);
 
-  pm_borders[0] = r;
+  pm_borders[0] = pm_prop->getSize() >> 1;
   
   while (x<y) {
     if (f >= 0) {

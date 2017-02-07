@@ -41,7 +41,7 @@ public :
     void Rect(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
     void Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
     void Rectf_imp(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
-    void drawPacman(uint8_t* pm_borders, renderer_elem* pm_prop, utils::direction dir);
+    void drawPacman(uint8_t* pm_borders, renderer_elem* pm_prop, utils::direction dir, uint16_t);
     void LCD_Clear(unsigned int j);
     
     int RGB(int r,int g,int b) {return r << 16 | g << 8 | b;}

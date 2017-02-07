@@ -17,7 +17,7 @@ private:
     ILI9481_driver* tft;
     uint8_t pm_borders[static_tile_size >> 1];
     uint16_t pm_x, pm_y; //These are still used by the precalc renderingfunction. TODO: remove!
-    
+    uint16_t bg_color;
     renderer_elem* pm_prop;   
 
     int calculateTileSize(int,int);
@@ -36,7 +36,7 @@ public :
     void draw_pm_border(utils::direction);
 	//utils::position drawPacman( uint16_t, uint16_t, utils::direction dir);
     utils::position drawPacman(utils::direction);
-    void drawPacmanInit(uint16_t r);
+    void drawPacmanInit();
     
 
 

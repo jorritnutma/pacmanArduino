@@ -25,8 +25,8 @@ bool pacman::updateGame(){
     //render->clearScreen();
     //render->drawPacman(pmpos, utils::DOWN);
     //render->fillCircle(50, 50, 20, colors::GREEN);    
-	render->drawPacmanPreCalc(utils::RIGHT);
-	pm_pos = render->drawPacman(pm_dir);
+	pm_pos = render->drawPacmanPreCalc(pm_dir);
+	//pm_pos = render->drawPacman(pm_dir);
 	if (pm_pos.y == 5)
 	{
 		pm_dir = utils::UP;
@@ -61,7 +61,7 @@ pacmanField* pacman::loadField(){
 }
 
 void pacman::init(){
-	render->drawPacmanInit(19);
+	render->drawPacmanInit();
 }
 
 void loop() {
@@ -89,7 +89,7 @@ void loop() {
 
 	while( p.updateGame()){
         
-		delay(50);
+		delay(500);
 	}
 
 
