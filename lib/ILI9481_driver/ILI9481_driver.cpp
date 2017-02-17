@@ -5,12 +5,11 @@
 // Uno port/pin : PD7 PD6 PD5 PD4 PD3 PD2 PB1 PB0
 // Mega dig. pin:  29  28  27  26  25  24  23  22
 #include <ILI9481_driver.h>
-#include <utils.h>
 
 #define TFTWIDTH   320
 #define TFTHEIGHT  480
 
-//TODO: to be moven togher with the drawtriangle function
+//TODO: to be moved togher with the drawtriangle function
 #define _swap_int16_t(a, b) { int16_t t = a; a = b; b = t; }
 
 ILI9481_driver::ILI9481_driver() : Driver (TFTWIDTH, TFTHEIGHT){
@@ -201,7 +200,7 @@ void ILI9481_driver::Rect(unsigned int x,unsigned int y,unsigned int w,unsigned 
 }
 
 
-void ILI9481_driver::Rectf_imp(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c)
+void ILI9481_driver::Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c)
 {
 
   unsigned int i,j;
@@ -221,16 +220,6 @@ void ILI9481_driver::Rectf_imp(unsigned int x,unsigned int y,unsigned int w,unsi
   }
   digitalWrite(LCD_CS,HIGH);
 
-}
-
-void ILI9481_driver::Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c)
-{
-  unsigned int i;
-  for(i=0;i<h;i++)
-  {
-    H_line(x  , y  , w, c);
-    H_line(x  , y+i, w, c);
-  }
 }
 
 void ILI9481_driver::LCD_Clear(unsigned int j)
@@ -330,91 +319,6 @@ void ILI9481_driver::fillTriangle(int16_t x0, int16_t y0,
   }
 }
 
-//TODO: to be moved to a subclass that only contians pacman stuff!!
-
-void ILI9481_driver::drawPacman(uint8_t* pm_borders, renderer_elem_pm* pm_prop, utils::direction dir, uint16_t bg_color)
-{
-
-  unsigned int i,j,k;
-  
-  uint16_t x = pm_prop->getXpos() ;
-  uint16_t y = pm_prop->getYpos();
-  uint16_t h = y + pm_prop->getSize();
-  uint16_t w = x + pm_prop->getSize();
-  uint16_t r = pm_prop->getSize() >> 1;
-  uint8_t c = (uint8_t) pm_prop->getColor();
-  uint8_t c_high = (uint8_t) (pm_prop->getColor() >> 8);
-      
-
-  Lcd_Write_Com(0x02c); //write_memory_start
-  digitalWrite(LCD_RS,HIGH);
-  digitalWrite(LCD_CS,LOW);
-  
-  Address_set(x, y, w, h);
-
-  for (i = 0; i <= pm_prop->getSize(); i++) {
-    if ( i < r ) {
-      k = r-i ;
-    }
-    else {
-      k = i-r;
-    }
-    for(j=0; j <= pm_prop->getSize(); j++){
-      if ( j >= r - pm_borders[k] && j <= r + pm_borders[k] ){
-        Lcd_Write_Data(c_high);
-        Lcd_Write_Data(c);
-      }
-      else {
-        Lcd_Write_Data(bg_color>>8);
-        Lcd_Write_Data(bg_color); 
-      }
-    }
-  }
-
-  digitalWrite(LCD_CS,HIGH);
-  
-  uint16_t x0, y0, x1, y1;
-  switch (pm_prop->getPrevDir()){
-    case utils::DOWN :
-      Rectf_imp(x, y - pm_prop->getStepSize(), pm_prop->getSize(), pm_prop->getStepSize() - 1, bg_color);
-      x0 = x + (r >> 1);
-      y0 = y + pm_prop->getSize();
-      x1 = x + r + (r>>1);
-      y1 = y + pm_prop->getSize();
-      break;
-    case utils::UP :
-      Rectf_imp(x, y+pm_prop->getSize()+1, pm_prop->getSize(), pm_prop->getStepSize(), bg_color);
-      x0 = x + (r >> 1);
-      y0 = y;
-      x1 = x + r + (r>>1);
-      y1 = y;
-      break;
-    case utils::RIGHT :
-      Rectf_imp(x - pm_prop->getStepSize(), y, pm_prop->getStepSize() - 1, pm_prop->getSize(), bg_color);
-      x0 = x + pm_prop->getSize();
-      y0 = y + (r>>1);
-      x1 = x + pm_prop->getSize();
-      y1 = y + r + (r>>1);
-      break;
-    case utils::LEFT :
-      Rectf_imp(x + pm_prop->getSize() + 1, y, pm_prop->getStepSize(), pm_prop->getSize(), bg_color);
-      x0 = x;
-      y0 = y + (r>>1);
-      x1 = x;
-      y1 = y + r + (r>>1);
-      break;      
-  }
-
-  if(pm_prop->getMouthOpen()){
-    fillTriangle(x0, y0, x + r, y + r, x1, y1, bg_color);
-    pm_prop->setMouthOpen(false);
-  }
-  else {
-    pm_prop->setMouthOpen(true);
-  }
-
-
-}
 
 
 // For I/O macros that were left undefined, declare function

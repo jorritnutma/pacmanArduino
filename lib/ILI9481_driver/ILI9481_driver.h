@@ -4,8 +4,6 @@
 //#include <utils.h>
 #include <Arduino.h>
 #include "Driver.h"
-#include "renderer_elem_pm.h"
-#include "utils.h"
 //#include <pin_magic.h>
 
 //Technical support:goodtft@163.com
@@ -27,8 +25,6 @@ class ILI9481_driver : public Driver {
 
 public :
 
-    const static int MAX_TILE_SIZE = 40;
-
     ILI9481_driver();
 
     void drawPixel(int16_t x, int16_t y, uint16_t color);
@@ -40,20 +36,19 @@ public :
 
     void Rect(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
     void Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
-    void Rectf_imp(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
+    
     void fillTriangle(int16_t x0, int16_t y0,int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
-    void drawPacman(uint8_t* pm_borders, renderer_elem_pm* pm_prop, utils::direction dir, uint16_t);
+    
     void LCD_Clear(unsigned int j);
     
-    int RGB(int r,int g,int b) {return r << 16 | g << 8 | b;}
+    //int RGB(int r,int g,int b) {return r << 16 | g << 8 | b;}
 
     int getScreenWidth(){return width;}
     int getScreenLength(){return length;}
 
-private:
+protected:
     int width, length;
-    uint16_t circleBoundaries[MAX_TILE_SIZE >> 1];
-
+   
     void Lcd_Write_Bus(unsigned char d);
 
     void Lcd_Write_Com(unsigned char VH);

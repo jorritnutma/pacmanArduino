@@ -11,7 +11,7 @@ Serial_logger logger;
 
 pacman::pacman()
 {
-    driver = new ILI9481_driver();
+    driver = new ILI9481_pacman();
     pm_pos = {1,1};
     pm_dir = utils::DOWN;
 }
@@ -25,7 +25,7 @@ bool pacman::updateGame(){
     //render->clearScreen();
     //render->drawPacman(pmpos, utils::DOWN);
     //render->fillCircle(50, 50, 20, colors::GREEN);    
-	pm_pos = render->drawPacmanPreCalc(pm_dir);
+	pm_pos = render->drawPacman(pm_dir);
 	//pm_pos = render->drawPacman(pm_dir);
 	switch (pm_pos.y){
 	case 1 :
@@ -64,7 +64,6 @@ void setup(){
 
 void pacman::pm_border_test(){
     render->draw_pm_border(utils::LEFT);
-    render->drawPacmanPreCalc(utils::RIGHT);
 }
 
 void pacman::clearScreen(){
@@ -117,18 +116,16 @@ pacmanField* pacman::genTestField(uint8_t width, uint8_t height){
 	// logger.println(field->getTile(1,1)->hasWestWall());
 	// logger.println(field->getTile(1,1)->hasSouthWall());
 }
-void pacman::init(){
-	render->drawPacmanInit();
-}
+
 
 void loop() {
 		
 	pacman p;
 
-	p.setRenderer(new pacman_renderer(0,0, p.getDriver(), p.genTestField(16,32)));
+	p.setRenderer(new pacman_renderer(p.getDriver(), p.genTestField(16,32)));
     logger.println("Renderer added");
     p.clearScreen();
-    p.init();
+
     ILI9481_driver* d = p.getDriver();
 
     uint16_t i;
@@ -137,12 +134,6 @@ void loop() {
 
 	  d-> Rectf(60, i, 50, 20, colors::GREEN);
 	}
-	for(i=1; i < 480; i += 20){
-
-	  d-> Rectf_imp(120, i, 50, 20, colors::BLUE);
-	}
-
-	p.pm_border_test();
 
 	while( p.updateGame()){
         
