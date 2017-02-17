@@ -1,22 +1,39 @@
 #include <pacman_renderer.h>
 #include <Driver.h>
 #include <renderer_elem_pm.h>
+#include <renderer_elem_wall.h>
 //#include "ILI9481_pacman.h"
 
 pacman_renderer::pacman_renderer(Driver* driver, pacmanField* field){
     tileSize = calculateTileSize(0,0);
+    wall_width = 3;
     tft = (ILI9481_pacman*) driver;
-    pm_prop = new renderer_elem_pm(26, 5, colors::YELLOW);
+    pm_prop = new renderer_elem_pm(20, 8, colors::YELLOW);
     pm_prop->setXpos(10);
     pm_prop->setYpos(50);
     pm_prop->setPrevDir(utils::DOWN);
     bg_color=colors::BLACK;
 
+    drawWalls(field);
+
     tft->drawPacmanInit(pm_prop);
 }
 
+void pacman_renderer::drawWalls(pacmanField* field){
+  renderer_elem_wall* wall = new renderer_elem_wall(wall_width, colors::BLUE); 
+  
+  for(int i = 0; i<10; i++){
+    wall->setXpos(i);
+    for(int j = 0; j < 15; j++){
+      wall->setYpos(j);
+      tft->drawVertWall(wall, tileSize);
+      tft->drawHorWall(wall, tileSize);
+    }
+  }
+}
+
 uint8_t pacman_renderer::calculateTileSize(int width, int length){
-  return 39;
+  return 30;
 }
 
 
@@ -43,20 +60,7 @@ utils::position pacman_renderer::drawPacman(utils::direction dir){
   pm_prop->setXpos(x0);
   pm_prop->setYpos(y0);
   
-  utils::position pos_n = {6,6};
-
-  if(pm_prop->getYpos() > 300 && pm_prop->getXpos() < 20 ){
-    pos_n.y=2;
-  }
-  else if (pm_prop->getYpos() > 300 && pm_prop->getXpos() > 200){
-    pos_n.y=3;
-  }
-  else if (pm_prop->getYpos() <20 && pm_prop->getXpos() > 200){
-    pos_n.y=4;
-  }
-  else if (pm_prop->getYpos() < 20 && pm_prop->getXpos() < 20){
-    pos_n.y=1;
-  }
+  utils::position pos_n = {pm_prop->getXpos() / tileSize , pm_prop->getYpos() / tileSize};
   return pos_n;
 }
 

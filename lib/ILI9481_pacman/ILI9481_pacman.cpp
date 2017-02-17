@@ -35,6 +35,18 @@ void ILI9481_pacman::drawPacmanInit(renderer_elem_pm* pm_prop){
   }
 }
 
+void ILI9481_pacman::drawVertWall(renderer_elem_wall* wall_prop, uint8_t tileSize){
+  uint16_t x = wall_prop->getXpos() * tileSize;
+  uint16_t y = wall_prop->getYpos() * tileSize;
+  Rectf(x,y, wall_prop->getWidth(), tileSize, wall_prop->getColor() );
+}
+
+void ILI9481_pacman::drawHorWall(renderer_elem_wall* wall_prop, uint8_t tileSize){
+  uint16_t x = wall_prop->getXpos() * tileSize;
+  uint16_t y = wall_prop->getYpos() * tileSize;
+  Rectf(x, y, tileSize,  wall_prop->getWidth(), wall_prop->getColor());
+}
+
 void ILI9481_pacman::drawPacman( renderer_elem_pm* pm_prop, utils::direction dir, uint16_t bg_color)
 {
 
@@ -108,12 +120,12 @@ void ILI9481_pacman::drawPacman( renderer_elem_pm* pm_prop, utils::direction dir
       break;      
   }
 
-  if(pm_prop->getMouthOpen()){
-    fillTriangle(x0, y0, x + r, y + r, x1, y1, bg_color);
-    pm_prop->setMouthOpen(false);
-  }
-  else {
-    pm_prop->setMouthOpen(true);
-  }
+  // if(pm_prop->getMouthOpen()){
+  //   fillTriangle(x0, y0, x + r, y + r, x1, y1, bg_color);
+  //   pm_prop->setMouthOpen(false);
+  // }
+  // else {
+  //   pm_prop->setMouthOpen(true);
+  // }
 }
 

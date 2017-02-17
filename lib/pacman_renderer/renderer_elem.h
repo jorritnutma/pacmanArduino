@@ -13,7 +13,8 @@ protected :
 	utils::direction prev_dir;
 
 public :
-	renderer_elem(uint8_t, uint8_t, uint16_t);
+	renderer_elem(uint8_t, uint8_t, uint16_t color);
+	renderer_elem(uint16_t color);
 	
 	uint16_t getXpos(){return x;}
 	void setXpos(uint16_t x_n){x = x_n;}

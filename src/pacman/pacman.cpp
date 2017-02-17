@@ -22,39 +22,26 @@ pacman::~pacman()
 }
 
 bool pacman::updateGame(){
-    //render->clearScreen();
-    //render->drawPacman(pmpos, utils::DOWN);
-    //render->fillCircle(50, 50, 20, colors::GREEN);    
 	pm_pos = render->drawPacman(pm_dir);
-	//pm_pos = render->drawPacman(pm_dir);
-	switch (pm_pos.y){
-	case 1 :
-		pm_dir = utils::DOWN;
-		logger.println("going downwards");
-		break;
-	case 2 :
-		pm_dir = utils::RIGHT;
-		break;
-	case 3 :
-		pm_dir = utils::UP;
-		break;
-	case 4 :
-		pm_dir = utils::LEFT;
-		break;
-	}
-	// if (pm_pos.y == 2)
-	// {
-	// 	pm_dir = utils::RIGHT;
-	// 	logger.println("turning upwards");
-	// }
-	// else if(pm_pos.y == 1){
-	// 	pm_dir = utils::DOWN;
-	// 	logger.println("turning downwards");
-	// }
 
-    // render->drawCircle(pm_pos.x, pm_pos.y, 20, colors::GREEN);
-    // render->drawCircle(320, 100, 30, colors::GREEN);
-    
+	logger.print("x: ");
+	logger.println(pm_pos.x);
+	logger.print("y: ");
+	logger.println(pm_pos.y);
+	
+	if(pm_pos.x < 1 && pm_pos.y < 10 ){
+		pm_dir = utils::DOWN;
+  	}
+  	else if (pm_pos.x < 6 && pm_pos.y > 9 ){
+		pm_dir = utils::RIGHT;
+  	}
+  	else if (pm_pos.x > 5 && pm_pos.y > 0){
+		pm_dir = utils::UP;
+  	}
+  	else if (pm_pos.x > 1 && pm_pos.y < 1){
+		pm_dir = utils::LEFT;
+  	}
+  	
     return true;
 }
 
@@ -121,31 +108,21 @@ pacmanField* pacman::genTestField(uint8_t width, uint8_t height){
 void loop() {
 		
 	pacman p;
-
-	p.setRenderer(new pacman_renderer(p.getDriver(), p.genTestField(16,32)));
-    logger.println("Renderer added");
     p.clearScreen();
+	pacman_renderer* render = new pacman_renderer(p.getDriver(), p.genTestField(16,32));
+	p.setRenderer(render);
+    logger.println("Renderer added");
+    
 
-    ILI9481_driver* d = p.getDriver();
+    //ILI9481_driver* d = p.getDriver();
 
-    uint16_t i;
-
-	for(i=1; i < 480; i += 20){
-
-	  d-> Rectf(60, i, 50, 20, colors::GREEN);
-	}
 
 	while( p.updateGame()){
         
-		delay(50);
+		delay(100);
 	}
 
 
     while(1){}
-	// Serial.println("Hello world");
-	// FooObject.firstFooMethod();
-	//delay(1000);
-	// FooObject.secondFooMethod();
-	// delay(1000);
-
+	
 }

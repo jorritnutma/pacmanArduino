@@ -27,8 +27,10 @@ ILI9481_driver::ILI9481_driver() : Driver (TFTWIDTH, TFTHEIGHT){
     digitalWrite(A2, HIGH);
     digitalWrite(A3, HIGH);
     digitalWrite(A4, HIGH);
+    
     Lcd_Init();
-    LCD_Clear(0xf800);
+    
+    //LCD_Clear(0xf800);
 }
 
 void ILI9481_driver::drawPixel(int16_t x, int16_t y, uint16_t color){

@@ -2,6 +2,7 @@
 #define ILI9481_PACMAN_H
 
 #include "renderer_elem_pm.h"
+#include "renderer_elem_wall.h"
 #include "ILI9481_driver.h"
 #include "utils.h"
 
@@ -15,6 +16,8 @@ public:
 	ILI9481_pacman();
 	void drawPacmanInit(renderer_elem_pm*);
 	void drawPacman(renderer_elem_pm* pm_prop, utils::direction dir, uint16_t);
+	void drawVertWall(renderer_elem_wall*, uint8_t tileSize);
+	void drawHorWall(renderer_elem_wall*, uint8_t tileSize);
 
 };
 

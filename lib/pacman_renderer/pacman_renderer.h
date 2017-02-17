@@ -17,7 +17,7 @@ private:
     uint16_t pm_x, pm_y; //These are still used by the precalc renderingfunction. TODO: remove!
     uint16_t bg_color;
     renderer_elem_pm* pm_prop;   
-
+    uint8_t wall_width;
     uint8_t calculateTileSize(int,int);
 
 public :
@@ -26,7 +26,7 @@ public :
     void clearScreen(int color){tft->LCD_Clear(color);}
     void clearScreen(){tft->LCD_Clear(colors::BLACK);}
     utils::position drawPacman(utils::direction);
-
+    void drawWalls(pacmanField*);
     //MORE OR LESS OBSOLETE STUFF
     //utils::position drawPacmanPreCalc(utils::direction dir);
     //void drawPixelTest();
