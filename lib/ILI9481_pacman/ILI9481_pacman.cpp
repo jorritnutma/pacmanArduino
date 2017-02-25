@@ -120,12 +120,12 @@ void ILI9481_pacman::drawPacman( renderer_elem_pm* pm_prop, utils::direction dir
       break;      
   }
 
-  // if(pm_prop->getMouthOpen()){
-  //   fillTriangle(x0, y0, x + r, y + r, x1, y1, bg_color);
-  //   pm_prop->setMouthOpen(false);
-  // }
-  // else {
-  //   pm_prop->setMouthOpen(true);
-  // }
+  if(pm_prop->getMouthOpen()){
+    fillTriangle(x0, y0, x + r, y + r, x1, y1, bg_color);
+    pm_prop->setMouthOpen(false);
+  }
+  else {
+    pm_prop->setMouthOpen(true);
+  }
 }
 

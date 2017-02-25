@@ -54,7 +54,7 @@ void pacman::pm_border_test(){
 }
 
 void pacman::clearScreen(){
-    render->clearScreen();
+    render->clearScreen(colors::RED);
 }
 
 pacmanField* pacman::loadField(){

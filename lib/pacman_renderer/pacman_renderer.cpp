@@ -6,11 +6,15 @@
 
 pacman_renderer::pacman_renderer(Driver* driver, pacmanField* field){
     tileSize = calculateTileSize(0,0);
-    wall_width = 3;
+    wall_width = 2;
     tft = (ILI9481_pacman*) driver;
-    pm_prop = new renderer_elem_pm(20, 8, colors::YELLOW);
-    pm_prop->setXpos(10);
-    pm_prop->setYpos(50);
+                  //renderer_elem_pm(size, stepSize, color)
+    pm_prop = new renderer_elem_pm(30, 20, colors::YELLOW);
+
+    uint16_t x0 = ((tileSize - wall_width - pm_prop->getSize()) >> 1) + wall_width;
+    uint16_t y0 = ((tileSize - wall_width -  pm_prop->getSize()) >> 1) + wall_width;
+    pm_prop->setXpos(x0);
+    pm_prop->setYpos(y0);
     pm_prop->setPrevDir(utils::DOWN);
     bg_color=colors::BLACK;
 
@@ -22,9 +26,9 @@ pacman_renderer::pacman_renderer(Driver* driver, pacmanField* field){
 void pacman_renderer::drawWalls(pacmanField* field){
   renderer_elem_wall* wall = new renderer_elem_wall(wall_width, colors::BLUE); 
   
-  for(int i = 0; i<10; i++){
+  for(int i = 0; i<7; i++){
     wall->setXpos(i);
-    for(int j = 0; j < 15; j++){
+    for(int j = 0; j < 11; j++){
       wall->setYpos(j);
       tft->drawVertWall(wall, tileSize);
       tft->drawHorWall(wall, tileSize);
@@ -33,35 +37,136 @@ void pacman_renderer::drawWalls(pacmanField* field){
 }
 
 uint8_t pacman_renderer::calculateTileSize(int width, int length){
-  return 30;
+  return 40;
 }
 
 
 utils::position pacman_renderer::drawPacman(utils::direction dir){
-  uint16_t x0 = pm_prop->getXpos();
-  uint16_t y0 = pm_prop->getYpos();
   
   tft->drawPacman(pm_prop, dir, bg_color);
-  pm_prop->setPrevDir(dir);
-  switch (dir){
-    case utils::DOWN :
-      y0 += pm_prop->getStepSize();
-      break;
-    case utils::UP :
-      y0 -= pm_prop->getStepSize();
-      break;
-    case utils::RIGHT :
-      x0 += pm_prop->getStepSize();
-      break;
-    case utils::LEFT :
-      x0 -= pm_prop->getStepSize();
-      break;  
-  }
-  pm_prop->setXpos(x0);
-  pm_prop->setYpos(y0);
+  
+  updatePosition(pm_prop, dir);
   
   utils::position pos_n = {pm_prop->getXpos() / tileSize , pm_prop->getYpos() / tileSize};
   return pos_n;
+}
+
+void pacman_renderer::updatePosition(renderer_elem* prop, utils::direction dir){
+  
+  int16_t x0 = prop->getXpos();
+  int16_t y0 = prop->getYpos();
+  int8_t dx = 0;
+  int8_t dy = 0;
+
+  int16_t x_tile;
+ 
+  int16_t x_offset = ((tileSize - wall_width - prop->getSize()) >> 1) + wall_width;
+  int16_t y_offset = ((tileSize - wall_width - prop->getSize()) >> 1) + wall_width;
+  
+  utils::position pos = {prop->getXpos() / tileSize , prop->getYpos() / tileSize};
+  utils::direction tmp_dir = dir;
+
+  switch (dir){
+  case utils::DOWN :
+      dx = pos.x*tileSize + x_offset - x0;
+      if (prop->getPrevDir() == utils::LEFT && dx < 0 ){
+        tmp_dir = utils::LEFT;
+        dx = -prop->getStepSize();
+      }
+      else if (prop->getPrevDir() == utils::RIGHT && dx > 0){
+        tmp_dir = utils::RIGHT;
+        dx = prop->getStepSize();
+      }
+      else if ( prop->getPrevDir() == utils::LEFT || prop->getPrevDir() == utils::RIGHT) {
+        dy=prop->getStepSize() - abs(dx);
+      }
+      else {
+        dy= prop->getStepSize();
+      }
+      // if (prop->getPrevDir() == utils::LEFT && pos.x*tileSize + x_offset >= x0 - prop->getStepSize() ){
+      //   uint16_t dx = x0 - pos.x*tileSize - x_offset;
+      //   x0-=dx;
+      //   y0+=prop->getStepSize() - dx;
+      // }
+      // else if(prop->getPrevDir() == utils::LEFT){
+      //   x0-=prop->getStepSize();
+      //   tmp_dir = utils::LEFT;
+      // }
+
+      // else if (prop->getPrevDir() == utils::RIGHT && pos.x*tileSize + x_offset <= x0 + prop->getStepSize() ){
+      //   uint16_t dx = pos.x*tileSize + x_offset - x0;
+      //   x0+=dx;
+      //   y0+=prop->getStepSize() - dx;
+      // }
+      // else if(prop->getPrevDir() == utils::RIGHT){
+      //   x0+=prop->getStepSize();
+      //   tmp_dir = utils::RIGHT;
+      // }
+
+      // else{
+      //   y0 += prop->getStepSize();
+      // }
+      break;
+    
+    case utils::UP :
+      dx = pos.x*tileSize + x_offset - x0;
+      if (prop->getPrevDir() == utils::LEFT && dx < 0 ){
+        tmp_dir = utils::LEFT;
+        dx = -prop->getStepSize();
+      }
+      else if (prop->getPrevDir() == utils::RIGHT && dx > 0){
+        tmp_dir = utils::RIGHT;
+        dx = prop->getStepSize();
+      }
+      else if ( prop->getPrevDir() == utils::LEFT || prop->getPrevDir() == utils::RIGHT) {
+        dy=-prop->getStepSize() + abs(dx);
+      }
+      else {
+        dy=-prop->getStepSize();
+      }
+      break;
+    case utils::RIGHT :
+      dy = pos.y*tileSize + y_offset - y0;
+      if (prop->getPrevDir() == utils::UP && dy < 0 ){
+        tmp_dir = utils::UP;
+        dy = -prop->getStepSize();
+      }
+      else if (prop->getPrevDir() == utils::DOWN && dy > 0){
+        tmp_dir = utils::DOWN;
+        dy = prop->getStepSize();
+      }
+      else if ( prop->getPrevDir() == utils::UP || prop->getPrevDir() == utils::DOWN) {
+        dx = prop->getStepSize() - abs(dy);
+      }
+      else {
+        dx = prop->getStepSize();
+      }
+      break;
+    case utils::LEFT :
+      dy = pos.y*tileSize + y_offset - y0;
+      if (prop->getPrevDir() == utils::UP && dy < 0 ){
+        tmp_dir = utils::UP;
+        dy = -prop->getStepSize();
+      }
+      else if (prop->getPrevDir() == utils::DOWN && dy > 0){
+        tmp_dir = utils::DOWN;
+        dy = prop->getStepSize();
+      }
+      else if ( prop->getPrevDir() == utils::UP || prop->getPrevDir() == utils::DOWN) {
+        dx = -prop->getStepSize() + abs(dy);
+      }
+      else {
+        dx = -prop->getStepSize();
+      }
+      break;
+  }
+  x0+=dx;
+  y0+=dy;
+  
+  prop->setPrevDir(tmp_dir);
+
+  prop->setXpos(x0);
+  prop->setYpos(y0);
 }
 
 /* MORE OR LESS OBSOLETE FUNCTIONS */

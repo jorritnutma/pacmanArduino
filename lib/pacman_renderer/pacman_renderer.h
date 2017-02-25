@@ -6,6 +6,7 @@
 #include "Driver.h"
 #include "pacmanField.h"
 #include "renderer_elem_pm.h"
+#include "renderer_elem.h"
 
 class pacman_renderer
 {
@@ -19,7 +20,7 @@ private:
     renderer_elem_pm* pm_prop;   
     uint8_t wall_width;
     uint8_t calculateTileSize(int,int);
-
+    void updatePosition(renderer_elem*, utils::direction);
 public :
     pacman_renderer(Driver*, pacmanField*);
 	int getTileSize(){return tileSize;}
