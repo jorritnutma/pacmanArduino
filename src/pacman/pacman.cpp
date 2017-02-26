@@ -24,6 +24,7 @@ pacman::~pacman()
 bool pacman::updateGame(){
 	pm_pos = render->drawPacman(pm_dir);
 
+	render->drawMonster(utils::DOWN);
 	logger.print("x: ");
 	logger.println(pm_pos.x);
 	logger.print("y: ");
@@ -119,7 +120,7 @@ void loop() {
 
 	while( p.updateGame()){
         
-		delay(100);
+		delay(50);
 	}
 
 

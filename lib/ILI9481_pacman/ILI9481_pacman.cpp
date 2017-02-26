@@ -4,7 +4,6 @@
 
 ILI9481_pacman::ILI9481_pacman() : ILI9481_driver() {
 
-
 }
 
 void ILI9481_pacman::drawPacmanInit(renderer_elem_pm* pm_prop){
@@ -33,18 +32,6 @@ void ILI9481_pacman::drawPacmanInit(renderer_elem_pm* pm_prop){
     pm_borders[x] = y;
     pm_borders[y] = x;
   }
-}
-
-void ILI9481_pacman::drawVertWall(renderer_elem_wall* wall_prop, uint8_t tileSize){
-  uint16_t x = wall_prop->getXpos() * tileSize;
-  uint16_t y = wall_prop->getYpos() * tileSize;
-  Rectf(x,y, wall_prop->getWidth(), tileSize, wall_prop->getColor() );
-}
-
-void ILI9481_pacman::drawHorWall(renderer_elem_wall* wall_prop, uint8_t tileSize){
-  uint16_t x = wall_prop->getXpos() * tileSize;
-  uint16_t y = wall_prop->getYpos() * tileSize;
-  Rectf(x, y, tileSize,  wall_prop->getWidth(), wall_prop->getColor());
 }
 
 void ILI9481_pacman::drawPacman( renderer_elem_pm* pm_prop, utils::direction dir, uint16_t bg_color)
@@ -129,3 +116,84 @@ void ILI9481_pacman::drawPacman( renderer_elem_pm* pm_prop, utils::direction dir
   }
 }
 
+void ILI9481_pacman::drawMonsterInit(renderer_elem_monster* prop){
+  if (prop->getSize() > MAX_TILE_SIZE){
+    return;
+  }
+  
+  int16_t f = 1 - (prop->getSize() >> 1);
+  int16_t ddF_x = 1;
+  int16_t ddF_y = -2 * (prop->getSize() >> 1);
+  int16_t x = 0;
+  int16_t y = (prop->getSize() >> 1);
+
+  monster_borders[0] = prop->getSize() >> 1;
+  
+  while (x<y) {
+    if (f >= 0) {
+      y--;
+      ddF_y += 2;
+      f += ddF_y;
+    }
+    x++;
+    ddF_x += 2;
+    f += ddF_x;
+
+    monster_borders[x] = y;
+    monster_borders[y] = x;
+  }
+}
+
+void ILI9481_pacman::drawMonster(renderer_elem_monster* prop, uint16_t bg_color){
+  unsigned int i,j;
+  
+  uint16_t x = prop->getXpos() ;
+  uint16_t y = prop->getYpos();
+  uint16_t h = y + prop->getSize();
+  uint16_t w = x + prop->getSize();
+  uint16_t r = prop->getSize() >> 1;
+  uint8_t c = (uint8_t) prop->getColor();
+  uint8_t c_high = (uint8_t) (prop->getColor() >> 8);
+      
+
+  Lcd_Write_Com(0x02c); //write_memory_start
+  digitalWrite(LCD_RS,HIGH);
+  digitalWrite(LCD_CS,LOW);
+  
+  Address_set(x, y, w, h);
+
+  for (i = 0; i <= prop->getSize(); i++) {
+    if ( i < r ) {
+      for(j=0; j <= prop->getSize(); j++){
+        if ( j >= r - monster_borders[r-i] && j <= r + monster_borders[r-i] ){
+          Lcd_Write_Data(c_high);
+          Lcd_Write_Data(c);
+        }
+        else {
+          Lcd_Write_Data(bg_color>>8);
+          Lcd_Write_Data(bg_color); 
+        }
+      }
+    }
+    else {
+      for(j=0; j <= prop->getSize(); j++){
+        Lcd_Write_Data(c_high);
+        Lcd_Write_Data(c);
+      }
+    }
+  }
+
+  digitalWrite(LCD_CS,HIGH);
+}
+
+void ILI9481_pacman::drawVertWall(renderer_elem_wall* wall_prop, uint8_t tileSize){
+  uint16_t x = wall_prop->getXpos() * tileSize;
+  uint16_t y = wall_prop->getYpos() * tileSize;
+  Rectf(x,y, wall_prop->getWidth(), tileSize, wall_prop->getColor() );
+}
+
+void ILI9481_pacman::drawHorWall(renderer_elem_wall* wall_prop, uint8_t tileSize){
+  uint16_t x = wall_prop->getXpos() * tileSize;
+  uint16_t y = wall_prop->getYpos() * tileSize;
+  Rectf(x, y, tileSize,  wall_prop->getWidth(), wall_prop->getColor());
+}
