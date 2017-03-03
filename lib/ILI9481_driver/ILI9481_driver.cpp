@@ -244,6 +244,44 @@ void ILI9481_driver::LCD_Clear(unsigned int j)
 }
 
 //TODO: to be moved to some adafruit_GFX like class with sophisticated drawing functions
+
+void ILI9481_driver::fillCircle(int16_t x0, int16_t y0, int16_t r,
+ uint16_t color) {
+  V_line(x0, y0-r, 2*r+1, color);
+  fillCircleHelper(x0, y0, r, 3, 0, color);
+}
+
+// Used to do circles and roundrects
+void ILI9481_driver::fillCircleHelper(int16_t x0, int16_t y0, int16_t r,
+ uint8_t cornername, int16_t delta, uint16_t color) {
+
+  int16_t f     = 1 - r;
+  int16_t ddF_x = 1;
+  int16_t ddF_y = -2 * r;
+  int16_t x     = 0;
+  int16_t y     = r;
+
+  while (x<y) {
+    if (f >= 0) {
+      y--;
+      ddF_y += 2;
+      f     += ddF_y;
+    }
+    x++;
+    ddF_x += 2;
+    f     += ddF_x;
+
+    if (cornername & 0x1) {
+      V_line(x0+x, y0-y, 2*y+1+delta, color);
+      V_line(x0+y, y0-x, 2*x+1+delta, color);
+    }
+    if (cornername & 0x2) {
+      V_line(x0-x, y0-y, 2*y+1+delta, color);
+      V_line(x0-y, y0-x, 2*x+1+delta, color);
+    }
+  }
+}
+
 void ILI9481_driver::fillTriangle(int16_t x0, int16_t y0,
  int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color) {
 
@@ -320,6 +358,7 @@ void ILI9481_driver::fillTriangle(int16_t x0, int16_t y0,
     H_line(a, y, b-a+1, color);
   }
 }
+
 
 
 

@@ -1,12 +1,15 @@
 #include "pacmanField.h"
 
-pacmanField::pacmanField(uint8_t width, uint8_t height)
+pacmanField::pacmanField(uint8_t width, uint8_t height, utils::position pm_start, utils::position monsters_start)
 {
 	if (width > MAX_V_LINES || height > MAX_H_LINES){
 		return;
 	}
 	x_tiles = width;
 	y_tiles = height;
+
+	pm_start_pos = pm_start;
+	monster_start_pos= monsters_start;
 }
 
 pacmanField::~pacmanField()
@@ -20,10 +23,10 @@ bool pacmanField::hasWall(uint8_t x, uint8_t y, utils::direction dir){
 	uint16_t y_mask;
 
 	if (y > 15){
-		 y_mask = 1 << (y_tiles - y - 1);
+	 	y_mask = 1 << (y_tiles - y - 17);	
 	}
 	else {
-	 	y_mask = 1 << (y_tiles - y - 17);	
+		y_mask = 1 << (y_tiles - y - 1);
 	}
 	switch (dir){
 	case utils::UP :
@@ -32,10 +35,10 @@ bool pacmanField::hasWall(uint8_t x, uint8_t y, utils::direction dir){
 		return (h_walls[y+1] & x_mask);
 	case utils::LEFT :
 		if ( y > 15 ){
-			return v_walls1[x] & y_mask;
+			return (v_walls1[x] & y_mask);
 		}
 		else {
-			return v_walls0[x] & y_mask;
+			return (v_walls0[x] & y_mask);
 		}
 	case utils::RIGHT :
 		if (y> 15){
@@ -48,15 +51,10 @@ bool pacmanField::hasWall(uint8_t x, uint8_t y, utils::direction dir){
 }
 
 void pacmanField::assignVWall(uint16_t wallDef0, uint16_t wallDef1, uint8_t col){
-		v_walls0[col] = wallDef0; 
-		v_walls1[col] = wallDef1;
+	v_walls0[col] = wallDef0; 
+	v_walls1[col] = wallDef1;
 }
 
 void pacmanField::assignHWall(uint16_t wallDef, uint8_t row){
 	h_walls[row] = wallDef;
 }
-// bool pacmanField::hasEastWall(uint8_t x, uint8_t y){
-
-// }
-//         bool hasSouthWall(uint8_t, uint8_t);
-//         bool hasWestWall(uint8_t, uint8_t);

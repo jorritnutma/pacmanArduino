@@ -165,7 +165,7 @@ void ILI9481_pacman::drawMonsterInit(renderer_elem_monster* prop){
 }
 
 void ILI9481_pacman::drawMonster1(renderer_elem_monster* prop, uint16_t bg_color){
-  unsigned int i,j;
+  unsigned int i,j,k;
   uint16_t y0=100, x0=100;
 
   for (int i = 0; i < (prop->getSize() >> 1); i++)
@@ -173,47 +173,46 @@ void ILI9481_pacman::drawMonster1(renderer_elem_monster* prop, uint16_t bg_color
     drawPixel(x0 + monster_border_left[i], y0 - i, colors::WHITE);
     drawPixel(x0 - monster_border_right[i], y0 - i, colors::WHITE);
 
-    drawPixel(x0 + monster_border_left[i], y0 + i, colors::WHITE);
-    drawPixel(x0 - monster_border_right[i], y0 + i, colors::WHITE);
+    //drawPixel(x0 + monster_border_left[i], y0 + i, colors::WHITE);
+    //drawPixel(x0 - monster_border_right[i], y0 + i, colors::WHITE);
   }
 
-  // uint16_t x = prop->getXpos() ;
-  // uint16_t y = prop->getYpos();
-  // uint16_t h = y + prop->getSize();
-  // uint16_t w = x + prop->getSize();
-  // uint16_t r = prop->getSize() >> 1;
-  // uint8_t c = (uint8_t) prop->getColor();
-  // uint8_t c_high = (uint8_t) (prop->getColor() >> 8);
+  const uint16_t x = prop->getXpos() ;
+  const uint16_t y = prop->getYpos();
+  uint16_t h = y + prop->getSize();
+  uint16_t w = x + prop->getSize();
+  uint16_t r = prop->getSize() >> 1;
+  
+  uint8_t c = (uint8_t) prop->getColor();
+  uint8_t c_high = (uint8_t) (prop->getColor() >> 8);
       
 
-  // Lcd_Write_Com(0x02c); //write_memory_start
-  // digitalWrite(LCD_RS,HIGH);
-  // digitalWrite(LCD_CS,LOW);
+  Lcd_Write_Com(0x02c); //write_memory_start
+  digitalWrite(LCD_RS,HIGH);
+  digitalWrite(LCD_CS,LOW);
   
-  // Address_set(x, y, w, h);
+  Address_set(x, y, w, h);
 
-  // for (i = 0; i <= prop->getSize(); i++) {
-  //   if ( i < r ) {
-  //     for(j=0; j <= prop->getSize(); j++){
-  //       if ( j >= r - monster_borders[r-i] && j <= r + monster_borders[r-i] ){
-  //         Lcd_Write_Data(c_high);
-  //         Lcd_Write_Data(c);
-  //       }
-  //       else {
-  //         Lcd_Write_Data(bg_color>>8);
-  //         Lcd_Write_Data(bg_color); 
-  //       }
-  //     }
-  //   }
-  //   else {
-  //     for(j=0; j <= prop->getSize(); j++){
-  //       Lcd_Write_Data(c_high);
-  //       Lcd_Write_Data(c);
-  //     }
-  //   }
-  // }
+  for (i = 0; i <= prop->getSize(); i++) {
+   
+     k = abs( (int16_t) r - (int16_t) i);
+   
+    for(j=0; j <= prop->getSize(); j++){
+      if ( j >= r - monster_border_right[k] && j <= r + monster_border_left[k] ){
+        Lcd_Write_Data(c_high);
+        Lcd_Write_Data(c);
+      }
+      else {
+        Lcd_Write_Data(bg_color>>8);
+        Lcd_Write_Data(bg_color); 
+      }
+  
+    }
+  }
+  digitalWrite(LCD_CS,HIGH);
 
-  // digitalWrite(LCD_CS,HIGH);
+  fillCircle(x + r, y + r - (r>>1), 2, colors::BLACK);
+  fillCircle(x + r, y + r + (r>>1), 2, colors::BLACK);
 }
 
 

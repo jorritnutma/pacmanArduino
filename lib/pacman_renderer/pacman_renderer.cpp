@@ -6,49 +6,81 @@
 //#include "ILI9481_pacman.h"
 
 pacman_renderer::pacman_renderer(Driver* driver, pacmanField* field){
-    tileSize = calculateTileSize(0,0);
+    tft = (ILI9481_pacman*) driver;    
+    tileSize = calculateTileSize(field->getWidth(), field->getHeight() );
     wall_width = 2;
-    tft = (ILI9481_pacman*) driver;
-                  //renderer_elem_pm(size, stepSize, color)
-    pm_prop = new renderer_elem_pm(30, 10, colors::YELLOW);
 
-    uint16_t x0 = ((tileSize - wall_width - pm_prop->getSize()) >> 1) + wall_width;
-    uint16_t y0 = ((tileSize - wall_width -  pm_prop->getSize()) >> 1) + wall_width;
+    drawWalls(field);
+    checkBorders(field);
+
+                //renderer_elem_pm(size, stepSize, color)
+    pm_prop = new renderer_elem_pm(16, 10, colors::YELLOW);
+    uint16_t x0 = tileSize * field->getPacmanStart().x + ((tileSize - wall_width - pm_prop->getSize()) >> 1) + wall_width;
+    uint16_t y0 = tileSize * field->getPacmanStart().y + ((tileSize - wall_width -  pm_prop->getSize()) >> 1) + wall_width;
     pm_prop->setXpos(x0);
     pm_prop->setYpos(y0);
     pm_prop->setPrevDir(utils::DOWN);
     bg_color=colors::BLACK;
 
-    drawWalls(field);
-
     tft->drawPacmanInit(pm_prop);
 
-    monster_prop = new renderer_elem_monster(24,5,colors::WHITE);
-    monster_prop->setXpos(50);
-    monster_prop->setYpos(50);
-    tft->drawMonsterInit(monster_prop);
+    x0 = tileSize * field->getMonsterStart().x + ((tileSize - wall_width - pm_prop->getSize()) >> 1) + wall_width;
+    y0 = tileSize * field->getMonsterStart().y + ((tileSize - wall_width -  pm_prop->getSize()) >> 1) + wall_width;
+    monster_prop[0] = new renderer_elem_monster(16,5,colors::WHITE);
+    monster_prop[0]->setXpos(x0);
+    monster_prop[0]->setYpos(y0);
+    tft->drawMonsterInit(monster_prop[0]);
+
+    monster_prop[1] = new renderer_elem_monster(16,5,colors::WHITE);
+    monster_prop[1]->setXpos(x0);
+    monster_prop[1]->setYpos(y0);
+    
+}
+
+void pacman_renderer::checkBorders(pacmanField* field){
+//todo: borders should be closed
 }
 
 utils::position pacman_renderer::drawMonster(utils::direction){
 
-  tft->drawMonster1(monster_prop, colors::BLACK);
+  tft->drawMonster1(monster_prop[0], colors::BLACK);
+
+  tft->drawMonster1(monster_prop[1], colors::BLACK);
 }
 
 void pacman_renderer::drawWalls(pacmanField* field){
   renderer_elem_wall* wall = new renderer_elem_wall(wall_width, colors::BLUE); 
-  
-  for(int i = 0; i<7; i++){
+  wall->setYpos(field->getHeight());
+  for(int i = 0; i < field->getWidth(); i++){
     wall->setXpos(i);
-    for(int j = 0; j < 11; j++){
+    tft->drawHorWall(wall, tileSize);
+  }
+
+  wall->setXpos(field->getWidth());
+  for(int i = 0; i < field->getHeight(); i++){
+    wall->setYpos(i);
+    tft->drawVertWall(wall, tileSize);
+  }
+  for(int i = 0; i < field->getWidth(); i++){
+    wall->setXpos(i);
+    for(int j = 0; j < field->getHeight(); j++){
       wall->setYpos(j);
-      tft->drawVertWall(wall, tileSize);
-      tft->drawHorWall(wall, tileSize);
+      if ( field->hasWall(i, j, utils::UP) ){
+        tft->drawHorWall(wall, tileSize);
+      }
+      if (field->hasWall(i,j, utils::LEFT)){
+        tft->drawVertWall(wall, tileSize);
+     }
     }
   }
 }
 
-uint8_t pacman_renderer::calculateTileSize(int width, int length){
-  return 40;
+uint8_t pacman_renderer::calculateTileSize(uint16_t fieldWidth, uint16_t fieldHeight){
+  
+  uint16_t h = 480 / fieldHeight;
+  uint16_t w = 319 / fieldWidth;
+
+  return h < w ? h : w;
 }
 
 

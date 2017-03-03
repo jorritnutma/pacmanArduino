@@ -38,7 +38,9 @@ public :
     void Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned int h,unsigned int c);
     
     void fillTriangle(int16_t x0, int16_t y0,int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color);
-    
+    void fillCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
+    void fillCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t cornername, int16_t delta, uint16_t color);
+
     void LCD_Clear(unsigned int j);
     
     //int RGB(int r,int g,int b) {return r << 16 | g << 8 | b;}
