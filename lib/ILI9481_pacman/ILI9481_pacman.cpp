@@ -36,24 +36,15 @@ void ILI9481_pacman::drawPacmanInit(renderer_elem_pm* pm_prop){
 
 void ILI9481_pacman::drawPacman( renderer_elem_pm* pm_prop, utils::direction dir, uint16_t bg_color)
 {
-
-  unsigned int i,j,k;
-  
-  uint16_t x = pm_prop->getXpos() ;
-  uint16_t y = pm_prop->getYpos();
-  uint16_t h = y + pm_prop->getSize();
-  uint16_t w = x + pm_prop->getSize();
-  uint16_t r = pm_prop->getSize() >> 1;
+ 
+  uint16_t x = pm_prop->getXpos(), y = pm_prop->getYpos();
+  uint8_t i,j,k;
+  uint8_t r = pm_prop->getSize() >> 1;
   uint8_t c = (uint8_t) pm_prop->getColor();
   uint8_t c_high = (uint8_t) (pm_prop->getColor() >> 8);
-      
-
-  Lcd_Write_Com(0x02c); //write_memory_start
-  digitalWrite(LCD_RS,HIGH);
-  digitalWrite(LCD_CS,LOW);
   
-  Address_set(x, y, w, h);
-
+  setupRectDrawing(x, y, pm_prop->getSize(), pm_prop->getSize());
+ 
   for (i = 0; i <= pm_prop->getSize(); i++) {
     if ( i < r ) {
       k = r-i ;
@@ -177,13 +168,13 @@ void ILI9481_pacman::drawMonster1(renderer_elem_monster* prop, uint16_t bg_color
     drawPixel(x0 - monster_border_right[i], y0 + i, colors::WHITE);
   }
 
-  // uint16_t x = prop->getXpos() ;
-  // uint16_t y = prop->getYpos();
-  // uint16_t h = y + prop->getSize();
-  // uint16_t w = x + prop->getSize();
-  // uint16_t r = prop->getSize() >> 1;
-  // uint8_t c = (uint8_t) prop->getColor();
-  // uint8_t c_high = (uint8_t) (prop->getColor() >> 8);
+  uint16_t x = prop->getXpos() ;
+  uint16_t y = prop->getYpos();
+  uint16_t h = y + prop->getSize();
+  uint16_t w = x + prop->getSize();
+  uint16_t r = prop->getSize() >> 1;
+  uint8_t c = (uint8_t) prop->getColor();
+  uint8_t c_high = (uint8_t) (prop->getColor() >> 8);
       
 
   // Lcd_Write_Com(0x02c); //write_memory_start

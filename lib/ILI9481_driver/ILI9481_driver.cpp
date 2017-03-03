@@ -33,6 +33,16 @@ ILI9481_driver::ILI9481_driver() : Driver (TFTWIDTH, TFTHEIGHT){
     //LCD_Clear(0xf800);
 }
 
+void ILI9481_driver::setupRectDrawing(uint16_t x, uint16_t y, uint16_t w, uint16_t h){
+
+  Lcd_Write_Com(0x02c); //write_memory_start
+  digitalWrite(LCD_RS,HIGH);
+  digitalWrite(LCD_CS,LOW);
+  
+  Address_set(x, y, x + w, y + h);
+
+}
+
 void ILI9481_driver::drawPixel(int16_t x, int16_t y, uint16_t color){
   
 //Clip
@@ -164,12 +174,10 @@ void ILI9481_driver::Lcd_Init(void)
 void ILI9481_driver::H_line(unsigned int x, unsigned int y, unsigned int l, unsigned int c)
 {
   unsigned int i;
-  Lcd_Write_Com(0x02c); //write_memory_start
-  digitalWrite(LCD_RS,HIGH);
-  digitalWrite(LCD_CS,LOW);
-  l=l+x;
-  Address_set(x,y,l,y);
-  for(i=1;i<=l;i++)
+  
+  setupRectDrawing(x,y,l,y);
+  
+  for(i=1;i<=l+x;i++)
   {
     Lcd_Write_Data(c>>8);
     Lcd_Write_Data(c);
@@ -180,12 +188,9 @@ void ILI9481_driver::H_line(unsigned int x, unsigned int y, unsigned int l, unsi
 void ILI9481_driver::V_line(unsigned int x, unsigned int y, unsigned int l, unsigned int c)
 {
   unsigned int i;
-  Lcd_Write_Com(0x02c); //write_memory_start
-  digitalWrite(LCD_RS,HIGH);
-  digitalWrite(LCD_CS,LOW);
-  l=l+y;
-  Address_set(x,y,x,l);
-  for(i=y;i<=l;i++)
+  
+  setupRectDrawing(x,y,x,l);
+  for(i=y;i<=l+y;i++)
   {
     Lcd_Write_Data(c>>8);
     Lcd_Write_Data(c);
@@ -206,16 +211,12 @@ void ILI9481_driver::Rectf(unsigned int x,unsigned int y,unsigned int w,unsigned
 {
 
   unsigned int i,j;
-  Lcd_Write_Com(0x02c); //write_memory_start
-  digitalWrite(LCD_RS,HIGH);
-  digitalWrite(LCD_CS,LOW);
-  h=h+y;
-  w=w+x;
-  Address_set(x,y,w,h);
   
-  for(i = y; i <= h;i++)
+  setupRectDrawing(x,y,w,h);
+
+  for(i = y; i <= h + y;i++)
   {
-    for(j=x; j <= w; j++){
+    for(j=x; j <= w + x; j++){
       Lcd_Write_Data(c>>8);
       Lcd_Write_Data(c);
     }
@@ -228,10 +229,7 @@ void ILI9481_driver::LCD_Clear(unsigned int j)
 {
   unsigned int i,m;
 
-  Lcd_Write_Com(0x02c); //write_memory_start
-  digitalWrite(LCD_RS,HIGH);
-  digitalWrite(LCD_CS,LOW);
-  Address_set(0,0,319,479);
+  setupRectDrawing(0,0,319,479);
 
   for(i=0;i<320;i++)
     for(m=0;m<480;m++)

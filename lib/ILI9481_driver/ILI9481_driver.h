@@ -58,6 +58,8 @@ protected:
     void Lcd_Write_Com_Data(unsigned char com,unsigned char dat);
 
     void Address_set(unsigned int x1,unsigned int y1,unsigned int x2,unsigned int y2);
+
+    void setupRectDrawing(uint16_t x,uint16_t y,uint16_t w, uint16_t h);
 //
 //               // These items may have previously been defined as macros
 //           // in pin_magic.h.  If not, function versions are declared:
