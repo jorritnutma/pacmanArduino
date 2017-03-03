@@ -12,7 +12,8 @@ class ILI9481_pacman : public ILI9481_driver{
 private:
 	const static int MAX_TILE_SIZE = 40;
 	uint8_t pm_borders[MAX_TILE_SIZE >> 1];
-	uint8_t monster_borders[MAX_TILE_SIZE >> 1];
+	uint8_t monster_border_left[MAX_TILE_SIZE >> 1];
+	uint8_t monster_border_right[MAX_TILE_SIZE >> 1];
 public:
 	ILI9481_pacman();
 	void drawPacmanInit(renderer_elem_pm*);
@@ -20,6 +21,7 @@ public:
 
 	void drawMonsterInit(renderer_elem_monster*);
 	void drawMonster(renderer_elem_monster*, uint16_t bg_color);
+	void drawMonster1(renderer_elem_monster*, uint16_t bg_color);
 
 	void drawVertWall(renderer_elem_wall*, uint8_t tileSize);
 	void drawHorWall(renderer_elem_wall*, uint8_t tileSize);

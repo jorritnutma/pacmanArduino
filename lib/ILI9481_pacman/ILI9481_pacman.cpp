@@ -124,11 +124,31 @@ void ILI9481_pacman::drawMonsterInit(renderer_elem_monster* prop){
   int16_t f = 1 - (prop->getSize() >> 1);
   int16_t ddF_x = 1;
   int16_t ddF_y = -2 * (prop->getSize() >> 1);
-  int16_t x = 0;
-  int16_t y = (prop->getSize() >> 1);
+  int8_t x = 0;
+  int8_t y = (prop->getSize() >> 1);
 
-  monster_borders[0] = prop->getSize() >> 1;
+  const uint8_t oneHalf = prop->getSize() >> 1;
+  const uint8_t oneFourth = prop->getSize() >> 2;
+  const uint8_t oneEight = prop->getSize()>>3;
+  const uint8_t th = prop->getSize() / 6;
+  const uint8_t dth = th / oneEight;
+
+  monster_border_left[0] = oneHalf;
+  monster_border_right[0] = oneHalf;
   
+  for (uint8_t i = 1; i <= oneFourth; i++) {
+    if ( i <= oneEight ) {
+      monster_border_right[i] = oneHalf;
+      monster_border_right[oneHalf - i + 1] = oneHalf;
+    }
+    else{
+      uint8_t triangle = oneHalf - ((i - oneEight) * dth);
+      monster_border_right[i] = triangle;
+      monster_border_right[oneHalf - i + 1] = triangle; 
+    }
+
+  }
+
   while (x<y) {
     if (f >= 0) {
       y--;
@@ -139,52 +159,105 @@ void ILI9481_pacman::drawMonsterInit(renderer_elem_monster* prop){
     ddF_x += 2;
     f += ddF_x;
 
-    monster_borders[x] = y;
-    monster_borders[y] = x;
+    monster_border_left[x] = y;
+    monster_border_left[y] = x;
   }
 }
 
-void ILI9481_pacman::drawMonster(renderer_elem_monster* prop, uint16_t bg_color){
+void ILI9481_pacman::drawMonster1(renderer_elem_monster* prop, uint16_t bg_color){
   unsigned int i,j;
-  
-  uint16_t x = prop->getXpos() ;
-  uint16_t y = prop->getYpos();
-  uint16_t h = y + prop->getSize();
-  uint16_t w = x + prop->getSize();
-  uint16_t r = prop->getSize() >> 1;
-  uint8_t c = (uint8_t) prop->getColor();
-  uint8_t c_high = (uint8_t) (prop->getColor() >> 8);
+  uint16_t y0=100, x0=100;
+
+  for (int i = 0; i < (prop->getSize() >> 1); i++)
+  {
+    drawPixel(x0 + monster_border_left[i], y0 - i, colors::WHITE);
+    drawPixel(x0 - monster_border_right[i], y0 - i, colors::WHITE);
+
+    drawPixel(x0 + monster_border_left[i], y0 + i, colors::WHITE);
+    drawPixel(x0 - monster_border_right[i], y0 + i, colors::WHITE);
+  }
+
+  // uint16_t x = prop->getXpos() ;
+  // uint16_t y = prop->getYpos();
+  // uint16_t h = y + prop->getSize();
+  // uint16_t w = x + prop->getSize();
+  // uint16_t r = prop->getSize() >> 1;
+  // uint8_t c = (uint8_t) prop->getColor();
+  // uint8_t c_high = (uint8_t) (prop->getColor() >> 8);
       
 
-  Lcd_Write_Com(0x02c); //write_memory_start
-  digitalWrite(LCD_RS,HIGH);
-  digitalWrite(LCD_CS,LOW);
+  // Lcd_Write_Com(0x02c); //write_memory_start
+  // digitalWrite(LCD_RS,HIGH);
+  // digitalWrite(LCD_CS,LOW);
   
-  Address_set(x, y, w, h);
+  // Address_set(x, y, w, h);
 
-  for (i = 0; i <= prop->getSize(); i++) {
-    if ( i < r ) {
-      for(j=0; j <= prop->getSize(); j++){
-        if ( j >= r - monster_borders[r-i] && j <= r + monster_borders[r-i] ){
-          Lcd_Write_Data(c_high);
-          Lcd_Write_Data(c);
-        }
-        else {
-          Lcd_Write_Data(bg_color>>8);
-          Lcd_Write_Data(bg_color); 
-        }
-      }
-    }
-    else {
-      for(j=0; j <= prop->getSize(); j++){
-        Lcd_Write_Data(c_high);
-        Lcd_Write_Data(c);
-      }
-    }
-  }
+  // for (i = 0; i <= prop->getSize(); i++) {
+  //   if ( i < r ) {
+  //     for(j=0; j <= prop->getSize(); j++){
+  //       if ( j >= r - monster_borders[r-i] && j <= r + monster_borders[r-i] ){
+  //         Lcd_Write_Data(c_high);
+  //         Lcd_Write_Data(c);
+  //       }
+  //       else {
+  //         Lcd_Write_Data(bg_color>>8);
+  //         Lcd_Write_Data(bg_color); 
+  //       }
+  //     }
+  //   }
+  //   else {
+  //     for(j=0; j <= prop->getSize(); j++){
+  //       Lcd_Write_Data(c_high);
+  //       Lcd_Write_Data(c);
+  //     }
+  //   }
+  // }
 
-  digitalWrite(LCD_CS,HIGH);
+  // digitalWrite(LCD_CS,HIGH);
 }
+
+
+// void ILI9481_pacman::drawMonster(renderer_elem_monster* prop, uint16_t bg_color){
+//   unsigned int i,j;
+  
+//   uint16_t x = prop->getXpos() ;
+//   uint16_t y = prop->getYpos();
+//   uint16_t h = y + prop->getSize();
+//   uint16_t w = x + prop->getSize();
+//   uint16_t r = prop->getSize() >> 1;
+//   uint8_t c = (uint8_t) prop->getColor();
+//   uint8_t c_high = (uint8_t) (prop->getColor() >> 8);
+      
+
+//   Lcd_Write_Com(0x02c); //write_memory_start
+//   digitalWrite(LCD_RS,HIGH);
+//   digitalWrite(LCD_CS,LOW);
+  
+//   Address_set(x, y, w, h);
+
+//   for (i = 0; i <= prop->getSize(); i++) {
+//     if ( i < r ) {
+//       for(j=0; j <= prop->getSize(); j++){
+//         if ( j >= r - monster_borders[r-i] && j <= r + monster_borders[r-i] ){
+//           Lcd_Write_Data(c_high);
+//           Lcd_Write_Data(c);
+//         }
+//         else {
+//           Lcd_Write_Data(bg_color>>8);
+//           Lcd_Write_Data(bg_color); 
+//         }
+//       }
+//     }
+//     else {
+//       for(j=0; j <= prop->getSize(); j++){
+//         Lcd_Write_Data(c_high);
+//         Lcd_Write_Data(c);
+//       }
+//     }
+//   }
+
+//   digitalWrite(LCD_CS,HIGH);
+// }
 
 void ILI9481_pacman::drawVertWall(renderer_elem_wall* wall_prop, uint8_t tileSize){
   uint16_t x = wall_prop->getXpos() * tileSize;

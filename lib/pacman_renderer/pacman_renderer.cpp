@@ -23,7 +23,7 @@ pacman_renderer::pacman_renderer(Driver* driver, pacmanField* field){
 
     tft->drawPacmanInit(pm_prop);
 
-    monster_prop = new renderer_elem_monster(30,5,colors::WHITE);
+    monster_prop = new renderer_elem_monster(24,5,colors::WHITE);
     monster_prop->setXpos(50);
     monster_prop->setYpos(50);
     tft->drawMonsterInit(monster_prop);
@@ -31,7 +31,7 @@ pacman_renderer::pacman_renderer(Driver* driver, pacmanField* field){
 
 utils::position pacman_renderer::drawMonster(utils::direction){
 
-  tft->drawMonster(monster_prop, colors::BLACK);
+  tft->drawMonster1(monster_prop, colors::BLACK);
 }
 
 void pacman_renderer::drawWalls(pacmanField* field){
