@@ -17,9 +17,7 @@ renderer_elem::renderer_elem(uint16_t col){
 }
 
 void renderer_elem::updatePosition(utils::direction dir, uint8_t tileSize, uint8_t wall_width){
-  
-  int16_t x0 = x;
-  int16_t y0 = y;
+  turn_leftover = 0;
   int8_t dx = 0;
   int8_t dy = 0;
  
@@ -30,7 +28,7 @@ void renderer_elem::updatePosition(utils::direction dir, uint8_t tileSize, uint8
   utils::direction tmp_dir = dir;
 
   if(dir == utils::UP || dir == utils::DOWN ){
-    dx = pos.x*tileSize + x_offset - x0;
+    dx = pos.x*tileSize + x_offset - x;
     if (prev_dir == utils::LEFT && dx + step_size < 0 ){
       tmp_dir = utils::LEFT;
       dx = -step_size;
@@ -42,6 +40,8 @@ void renderer_elem::updatePosition(utils::direction dir, uint8_t tileSize, uint8
     else if ( prev_dir == utils::LEFT || prev_dir == utils::RIGHT) {
       dy = step_size - abs(dx);
       dy = dir == utils::DOWN ? dy : -dy;
+      turn_leftover = abs(dx);
+	  turn_prev_dir = prev_dir;
     }
     else {
       dy= step_size;
@@ -49,7 +49,7 @@ void renderer_elem::updatePosition(utils::direction dir, uint8_t tileSize, uint8
     }
   }
   else {
-    dy = (int16_t)(pos.y*tileSize) + y_offset - y0;
+    dy = pos.y*tileSize + y_offset - y;
     if (prev_dir == utils::UP && dy + step_size < 0 ){
       tmp_dir = utils::UP;
       dy = -step_size;
@@ -61,6 +61,9 @@ void renderer_elem::updatePosition(utils::direction dir, uint8_t tileSize, uint8
     else if ( prev_dir == utils::UP || prev_dir == utils::DOWN) {
       dx = step_size - abs(dy);
       dx = dir == utils::RIGHT ? dx : dx * -1 ;
+      turn_leftover = abs(dy);
+	  turn_prev_dir = prev_dir;
+
     }
     else {
       dx = step_size ;
@@ -69,6 +72,6 @@ void renderer_elem::updatePosition(utils::direction dir, uint8_t tileSize, uint8
 
   }
   prev_dir = tmp_dir;
-  x = x0+dx;
-  y = y0+dy;
+  x += dx;
+  y += dy;
 }

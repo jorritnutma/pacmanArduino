@@ -36,6 +36,8 @@ public :
 	utils::direction getPrevDir(){return prev_dir;}
 	void setPrevDir(utils::direction dir) {prev_dir = dir;}
 
+	uint8_t getTurnLeftover(){return turn_leftover;}
+	uint8_t getTurnPrevDir(){return turn_prev_dir;}
 	void setTurningInfo(uint8_t leftover, utils::direction prev_dir){turn_leftover = leftover; turn_prev_dir = prev_dir;}
 };
 

@@ -36,7 +36,6 @@ void ILI9481_pacman::drawPacmanInit(renderer_elem_pm* pm_prop){
 
 void ILI9481_pacman::drawPacman( renderer_elem_pm* pm_prop, utils::direction dir, uint16_t bg_color)
 {
-
   unsigned int i,j,k;
   
   uint16_t x = pm_prop->getXpos() ;
@@ -46,7 +45,6 @@ void ILI9481_pacman::drawPacman( renderer_elem_pm* pm_prop, utils::direction dir
   uint16_t r = pm_prop->getSize() >> 1;
   uint8_t c = (uint8_t) pm_prop->getColor();
   uint8_t c_high = (uint8_t) (pm_prop->getColor() >> 8);
-      
 
   Lcd_Write_Com(0x02c); //write_memory_start
   digitalWrite(LCD_RS,HIGH);
@@ -74,45 +72,121 @@ void ILI9481_pacman::drawPacman( renderer_elem_pm* pm_prop, utils::direction dir
   }
 
   digitalWrite(LCD_CS,HIGH);
-  
+
+  cleanUpMovingElem(pm_prop, dir, bg_color);
+
+  //Now we're drawing the mouth if open or do nothing if closed
   uint16_t x0, y0, x1, y1;
-  switch (pm_prop->getPrevDir()){
+
+  if(pm_prop->getMouthOpen()){
+    switch (pm_prop->getPrevDir()){
     case utils::DOWN :
-      Rectf(x, y - pm_prop->getStepSize(), pm_prop->getSize(), pm_prop->getStepSize() - 1, bg_color);
       x0 = x + (r >> 1);
       y0 = y + pm_prop->getSize();
       x1 = x + r + (r>>1);
       y1 = y + pm_prop->getSize();
       break;
-    case utils::UP :
-      Rectf(x, y+pm_prop->getSize()+1, pm_prop->getSize(), pm_prop->getStepSize(), bg_color);
+    case utils::UP : 
       x0 = x + (r >> 1);
       y0 = y;
       x1 = x + r + (r>>1);
       y1 = y;
       break;
     case utils::RIGHT :
-      Rectf(x - pm_prop->getStepSize(), y, pm_prop->getStepSize() - 1, pm_prop->getSize(), bg_color);
       x0 = x + pm_prop->getSize();
       y0 = y + (r>>1);
       x1 = x + pm_prop->getSize();
       y1 = y + r + (r>>1);
       break;
     case utils::LEFT :
-      Rectf(x + pm_prop->getSize() + 1, y, pm_prop->getStepSize(), pm_prop->getSize(), bg_color);
       x0 = x;
       y0 = y + (r>>1);
       x1 = x;
       y1 = y + r + (r>>1);
       break;      
-  }
-
-  if(pm_prop->getMouthOpen()){
+    }
     fillTriangle(x0, y0, x + r, y + r, x1, y1, bg_color);
     pm_prop->setMouthOpen(false);
   }
   else {
     pm_prop->setMouthOpen(true);
+  }
+}
+
+void ILI9481_pacman::cleanUpMovingElem(renderer_elem* prop, utils::direction dir, uint16_t bg_color){
+  
+  uint16_t x = prop->getXpos();
+  uint16_t y = prop->getYpos();
+  uint8_t left_current_dir = prop->getStepSize() - prop->getTurnLeftover();
+  switch (prop->getPrevDir()){
+    case utils::DOWN :
+      if (prop->getTurnLeftover() > 0){
+        switch (prop->getTurnPrevDir()){
+          case utils::LEFT :
+            Rectf(x + prop->getSize(), y - left_current_dir, prop->getTurnLeftover(), prop->getSize(), bg_color);
+          break;
+
+          case utils::RIGHT :
+            Rectf(x - prop->getTurnLeftover(), y - left_current_dir, prop->getTurnLeftover(), prop->getSize(), bg_color);
+          break;
+        }
+        Rectf(x , y - left_current_dir, prop->getSize(), left_current_dir - 1, bg_color);
+      }
+      else {
+        Rectf(x, y - prop->getStepSize(), prop->getSize(), prop->getStepSize() - 1, bg_color);
+      }
+      break;
+    case utils::UP :
+      if (prop->getTurnLeftover() > 0){
+        switch (prop->getTurnPrevDir()){
+          case utils::LEFT :
+            Rectf(x + prop->getSize(), y + left_current_dir, prop->getTurnLeftover(), prop->getSize(), bg_color);
+          break;
+
+          case utils::RIGHT :
+            Rectf(x - prop->getTurnLeftover(), y + left_current_dir, prop->getTurnLeftover(), prop->getSize(), bg_color);
+          break;
+        }
+        Rectf(x, y + prop->getSize() + 1, prop->getSize(), left_current_dir, bg_color);
+      }
+      else {
+        Rectf(x, y+prop->getSize()+1, prop->getSize(), prop->getStepSize(), bg_color);
+      }
+      break;
+
+    case utils::RIGHT :
+    if (prop->getTurnLeftover() > 0){
+      switch (prop->getTurnPrevDir()){
+        case utils::UP :
+          Rectf(x + prop->getTurnLeftover(), y - left_current_dir, prop->getSize(), prop->getTurnLeftover(), bg_color);
+        break;
+        case utils::DOWN :
+          Rectf(x - left_current_dir, y - prop->getTurnLeftover(), prop->getSize(), prop->getTurnLeftover(), bg_color);
+        break;
+      }
+      Rectf(x - left_current_dir, y, left_current_dir, prop->getSize(), bg_color);
+    }
+    else {
+      Rectf(x - prop->getStepSize(), y, prop->getStepSize() - 1, prop->getSize(), bg_color);
+    }
+    break;
+
+    case utils::LEFT :
+    if (prop->getTurnLeftover() > 0){
+      switch (prop->getTurnPrevDir()){
+        case utils::UP :
+          Rectf(x + left_current_dir, y + prop->getSize(), prop->getSize(), prop->getTurnLeftover(), bg_color);
+        break;
+        case utils::DOWN :
+          Rectf(x + left_current_dir, y - prop->getTurnLeftover(), prop->getSize(), prop->getTurnLeftover(), bg_color);
+        break;
+      }
+      Rectf(x + prop->getSize(), y, left_current_dir, prop->getSize(), bg_color);
+    }
+    else {
+      Rectf(x + prop->getSize() + 1, y, prop->getStepSize(), prop->getSize(), bg_color);
+    }
+    break;      
   }
 }
 
