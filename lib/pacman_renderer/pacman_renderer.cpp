@@ -109,11 +109,11 @@ void pacman_renderer::updatePosition(renderer_elem* prop, utils::direction dir){
 
   if(dir == utils::UP || dir == utils::DOWN ){
     dx = pos.x*tileSize + x_offset - x0;
-    if (prop->getPrevDir() == utils::LEFT && dx < 0 ){
+    if (prop->getPrevDir() == utils::LEFT && dx + prop->getStepSize() < 0 ){
       tmp_dir = utils::LEFT;
       dx = -prop->getStepSize();
     }
-    else if (prop->getPrevDir() == utils::RIGHT && dx > 0){
+    else if (prop->getPrevDir() == utils::RIGHT && dx - prop->getStepSize() > 0){
       tmp_dir = utils::RIGHT;
       dx = prop->getStepSize();
     }
@@ -127,18 +127,22 @@ void pacman_renderer::updatePosition(renderer_elem* prop, utils::direction dir){
     }
   }
   else {
-    dy = pos.y*tileSize + y_offset - y0;
-    if (prop->getPrevDir() == utils::UP && dy < 0 ){
+    dy = (int16_t)(pos.y*tileSize) + y_offset - y0;
+    if (prop->getPrevDir() == utils::UP && dy + prop->getStepSize() < 0 ){
       tmp_dir = utils::UP;
       dy = -prop->getStepSize();
     }
-    else if (prop->getPrevDir() == utils::DOWN && dy > 0){
+    else if (prop->getPrevDir() == utils::DOWN && dy - prop->getStepSize() > 0){
       tmp_dir = utils::DOWN;
       dy = prop->getStepSize();
     }
-    else if ( prop->getPrevDir() == utils::UP || prop->getPrevDir() == utils::DOWN) {
-      dx = prop->getStepSize() - abs(dy);
-      dx = dir == utils::RIGHT ? dx : dx * -1 ;
+    else if ( prop->getPrevDir() == utils::UP && dy + prop->getStepSize() == 0){
+      tmp_dir = utils::UP;
+    } 
+    else if(prop->getPrevDir() == utils::DOWN &&  dy - prop->getStepSize() == 0) {
+      tmp_dir = utils::DOWN;
+      //dx = prop->getStepSize() - abs(dy);
+      //dx = dir == utils::RIGHT ? dx : dx * -1 ;
     }
     else {
       dx = prop->getStepSize() ;
