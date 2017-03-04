@@ -24,7 +24,7 @@ private:
     renderer_elem_monster* monster_prop[MAX_NUMBER_MONSTERS];
     uint8_t wall_width;
     uint8_t calculateTileSize(uint16_t,uint16_t);
-    void updatePosition(renderer_elem*, utils::direction);
+    
 public :
     pacman_renderer(Driver*, pacmanField*);
 	uint16_t getTileSize(){return tileSize;}

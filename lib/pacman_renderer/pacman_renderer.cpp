@@ -88,72 +88,12 @@ utils::position pacman_renderer::drawPacman(utils::direction dir){
   
   tft->drawPacman(pm_prop, dir, bg_color);
   
-  updatePosition(pm_prop, dir);
+  pm_prop->updatePosition(dir, tileSize, wall_width);
   
   utils::position pos_n = {pm_prop->getXpos() / tileSize , pm_prop->getYpos() / tileSize};
   return pos_n;
 }
 
-void pacman_renderer::updatePosition(renderer_elem* prop, utils::direction dir){
-  
-  int16_t x0 = prop->getXpos();
-  int16_t y0 = prop->getYpos();
-  int8_t dx = 0;
-  int8_t dy = 0;
- 
-  int16_t x_offset = ((tileSize - wall_width - prop->getSize()) >> 1) + wall_width;
-  int16_t y_offset = ((tileSize - wall_width - prop->getSize()) >> 1) + wall_width;
-  
-  utils::position pos = {prop->getXpos() / tileSize , prop->getYpos() / tileSize};
-  utils::direction tmp_dir = dir;
-
-  if(dir == utils::UP || dir == utils::DOWN ){
-    dx = pos.x*tileSize + x_offset - x0;
-    if (prop->getPrevDir() == utils::LEFT && dx + prop->getStepSize() < 0 ){
-      tmp_dir = utils::LEFT;
-      dx = -prop->getStepSize();
-    }
-    else if (prop->getPrevDir() == utils::RIGHT && dx - prop->getStepSize() > 0){
-      tmp_dir = utils::RIGHT;
-      dx = prop->getStepSize();
-    }
-    else if ( prop->getPrevDir() == utils::LEFT || prop->getPrevDir() == utils::RIGHT) {
-      dy = prop->getStepSize() - abs(dx);
-      dy = dir == utils::DOWN ? dy : -dy;
-    }
-    else {
-      dy= prop->getStepSize();
-      dy = dir == utils::DOWN ? dy : -dy; 
-    }
-  }
-  else {
-    dy = (int16_t)(pos.y*tileSize) + y_offset - y0;
-    if (prop->getPrevDir() == utils::UP && dy + prop->getStepSize() < 0 ){
-      tmp_dir = utils::UP;
-      dy = -prop->getStepSize();
-    }
-    else if (prop->getPrevDir() == utils::DOWN && dy - prop->getStepSize() > 0){
-      tmp_dir = utils::DOWN;
-      dy = prop->getStepSize();
-    }
-    else if ( prop->getPrevDir() == utils::UP && dy + prop->getStepSize() == 0){
-      tmp_dir = utils::UP;
-    } 
-    else if(prop->getPrevDir() == utils::DOWN &&  dy - prop->getStepSize() == 0) {
-      tmp_dir = utils::DOWN;
-      //dx = prop->getStepSize() - abs(dy);
-      //dx = dir == utils::RIGHT ? dx : dx * -1 ;
-    }
-    else {
-      dx = prop->getStepSize() ;
-      dx = dir == utils::RIGHT ? dx : dx * -1 ;
-    }
-
-  }
-  prop->setPrevDir(tmp_dir);
-  prop->setXpos(x0+dx);
-  prop->setYpos(y0+dy);
-}
 
 /* MORE OR LESS OBSOLETE FUNCTIONS */
 

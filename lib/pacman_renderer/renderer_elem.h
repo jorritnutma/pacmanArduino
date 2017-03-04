@@ -11,10 +11,13 @@ protected :
 	uint8_t step_size;
 	uint16_t color;
 	utils::direction prev_dir;
+	uint8_t turn_leftover;
+	utils::direction turn_prev_dir;
 
 public :
 	renderer_elem(uint8_t, uint8_t, uint16_t color);
 	renderer_elem(uint16_t color);
+	void updatePosition(utils::direction, uint8_t tileSize, uint8_t wall_width);
 	
 	uint16_t getXpos(){return x;}
 	void setXpos(uint16_t x_n){x = x_n;}
@@ -32,6 +35,8 @@ public :
 
 	utils::direction getPrevDir(){return prev_dir;}
 	void setPrevDir(utils::direction dir) {prev_dir = dir;}
+
+	void setTurningInfo(uint8_t leftover, utils::direction prev_dir){turn_leftover = leftover; turn_prev_dir = prev_dir;}
 };
 
 #endif //RENDERER_ELEM_H
