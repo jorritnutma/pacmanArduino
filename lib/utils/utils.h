@@ -39,9 +39,9 @@ public:
 	enum direction 
 	{
 		UP,
-		DOWN,
 		LEFT,
-		RIGHT
+		RIGHT,
+		DOWN
 	};
 	
 	// enum colors

@@ -17,7 +17,7 @@ pacmanField::~pacmanField()
     //dtor
 }
 
-bool pacmanField::hasWall(uint8_t x, uint8_t y, utils::direction dir){
+bool pacmanField::hasWall(uint8_t x, uint8_t y, int dir){
 	
 	uint16_t x_mask = 1 << (x_tiles - x - 1);
 	uint16_t y_mask;

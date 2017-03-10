@@ -238,18 +238,9 @@ void ILI9481_pacman::drawMonsterInit(renderer_elem_monster* prop){
   }
 }
 
-void ILI9481_pacman::drawMonster1(renderer_elem_monster* prop, uint16_t bg_color){
+void ILI9481_pacman::drawMonster(renderer_elem_monster* prop, utils::direction dir, uint16_t bg_color){
   unsigned int i,j,k;
   uint16_t y0=100, x0=100;
-
-  for (int i = 0; i < (prop->getSize() >> 1); i++)
-  {
-    drawPixel(x0 + monster_border_left[i], y0 - i, colors::WHITE);
-    drawPixel(x0 - monster_border_right[i], y0 - i, colors::WHITE);
-
-    //drawPixel(x0 + monster_border_left[i], y0 + i, colors::WHITE);
-    //drawPixel(x0 - monster_border_right[i], y0 + i, colors::WHITE);
-  }
 
   const uint16_t x = prop->getXpos() ;
   const uint16_t y = prop->getYpos();
@@ -285,8 +276,23 @@ void ILI9481_pacman::drawMonster1(renderer_elem_monster* prop, uint16_t bg_color
   }
   digitalWrite(LCD_CS,HIGH);
 
+  //Eyes of the monster
   fillCircle(x + r, y + r - (r>>1), 2, colors::BLACK);
   fillCircle(x + r, y + r + (r>>1), 2, colors::BLACK);
+
+  cleanUpMovingElem(prop, dir, bg_color);
+}
+
+void ILI9481_pacman::drawVertWall(renderer_elem_wall* wall_prop, uint8_t tileSize, uint8_t wall_width){
+  uint16_t x = wall_prop->getXpos() * tileSize;
+  uint16_t y = wall_prop->getYpos() * tileSize;
+  Rectf(x,y, wall_prop->getWidth(), tileSize + wall_width, wall_prop->getColor() );
+}
+
+void ILI9481_pacman::drawHorWall(renderer_elem_wall* wall_prop, uint8_t tileSize, uint8_t wall_width){
+  uint16_t x = wall_prop->getXpos() * tileSize;
+  uint16_t y = wall_prop->getYpos() * tileSize;
+  Rectf(x, y, tileSize + wall_width,  wall_prop->getWidth(), wall_prop->getColor());
 }
 
 
@@ -331,15 +337,3 @@ void ILI9481_pacman::drawMonster1(renderer_elem_monster* prop, uint16_t bg_color
 
 //   digitalWrite(LCD_CS,HIGH);
 // }
-
-void ILI9481_pacman::drawVertWall(renderer_elem_wall* wall_prop, uint8_t tileSize){
-  uint16_t x = wall_prop->getXpos() * tileSize;
-  uint16_t y = wall_prop->getYpos() * tileSize;
-  Rectf(x,y, wall_prop->getWidth(), tileSize, wall_prop->getColor() );
-}
-
-void ILI9481_pacman::drawHorWall(renderer_elem_wall* wall_prop, uint8_t tileSize){
-  uint16_t x = wall_prop->getXpos() * tileSize;
-  uint16_t y = wall_prop->getYpos() * tileSize;
-  Rectf(x, y, tileSize,  wall_prop->getWidth(), wall_prop->getColor());
-}

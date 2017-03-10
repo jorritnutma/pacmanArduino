@@ -11,17 +11,15 @@
 
 class pacman_renderer
 {
-     
 
 private:
-    const static int MAX_NUMBER_MONSTERS = 6;
-
+    
 	uint16_t tileSize;
     ILI9481_pacman* tft;
     uint16_t pm_x, pm_y; //These are still used by the precalc renderingfunction. TODO: remove!
     uint16_t bg_color;
     renderer_elem_pm* pm_prop;
-    renderer_elem_monster* monster_prop[MAX_NUMBER_MONSTERS];
+    renderer_elem_monster* monster_prop[pacmanField::MAX_NUMBER_MONSTERS];
     uint8_t wall_width;
     uint8_t calculateTileSize(uint16_t,uint16_t);
     

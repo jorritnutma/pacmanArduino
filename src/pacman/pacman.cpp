@@ -24,8 +24,13 @@ pacman::~pacman()
 bool pacman::updateGame(){
 	pm_pos = render->drawPacman(pm_dir);
 
-	render->drawMonster(pm_dir);
+	if (monster_pos[0].x != monster_prev_pos[0].x || monster_pos[0].y != monster_prev_pos[0].y){
+		monster_dir[0] = moveElementRandom(monster_pos[0], monster_dir[0]);
+	}
+	monster_prev_pos[0] = monster_pos[0];
+	monster_pos[0] = render->drawMonster(monster_dir[0]);
 	
+
 	logger.print("x: ");
 	logger.println(pm_pos.x);
 	logger.print("y: ");
@@ -64,6 +69,23 @@ pacmanField* pacman::loadField(){
 
 }
 
+utils::direction pacman::moveElementRandom(utils::position pos, utils::direction dir){
+
+	utils::direction options[4]={0,0,0,0};
+	uint8_t num_option=0;
+
+	for (uint8_t i = 0; i < 4; i++){
+		if ( i != 3 - dir && !field->hasWall(pos.x, pos.y, i) ){
+			options[num_option] = i;
+			num_option++;
+		}
+	}
+	if ( num_option == 0) {
+		return 3 - dir;
+	}
+	return options[random(num_option)];
+}
+
 pacmanField* pacman::genTestField(uint8_t width, uint8_t height){
 	utils::position m_pos = {4,6};
     utils::position pm_pos = {0,0};
@@ -98,24 +120,24 @@ pacmanField* pacman::genTestField(uint8_t width, uint8_t height){
 	field->assignVWall(0b011100001111000, 0, 8);
 	field->assignVWall(0b011111111111110, 0, 9);
 
-	// logger.println(field->hasWall(0,0, utils::LEFT)); //0
-	// logger.println(field->hasWall(0,31, utils::LEFT)); //1
-	// logger.println(field->hasWall(0,31, utils::RIGHT)); //1
+	logger.println(field->hasWall(0,0, utils::LEFT)); //0
+	logger.println(field->hasWall(0,31, utils::LEFT)); //1
+	logger.println(field->hasWall(0,31, utils::RIGHT)); //1
 
-	// logger.println("Start for loop");
-	// for (uint8_t i = 0; i < 32; i++){
-	// 	logger.println(field->hasWall(0,i, utils::RIGHT)); 
-	// }
-	// logger.println("I wanna know!");
-	// logger.println(field->hasWall(0,3, utils::RIGHT)); // 1
-	// logger.println(field->hasWall(1,3, utils::LEFT)); // 1
+	logger.println("Start for loop");
+	for (uint8_t i = 0; i < 32; i++){
+		logger.println(field->hasWall(0,i, utils::RIGHT)); 
+	}
+	logger.println("I wanna know!");
+	logger.println(field->hasWall(0,3, utils::RIGHT)); // 1
+	logger.println(field->hasWall(1,3, utils::LEFT)); // 1
 
-	// logger.println(field->hasWall(0,0, utils::UP)); // 1
-	// logger.println(field->hasWall(15,0, utils::UP)); // 1
-	// logger.println(field->hasWall(7,0, utils::UP)); // 1
+	logger.println(field->hasWall(0,0, utils::UP)); // 1
+	logger.println(field->hasWall(15,0, utils::UP)); // 1
+	logger.println(field->hasWall(7,0, utils::UP)); // 1
 	
-	// logger.println(field->hasWall(5,0, utils::DOWN)); //0
-	// logger.println(field->hasWall(5,1, utils::UP)); //0
+	logger.println(field->hasWall(5,0, utils::DOWN)); //0
+	logger.println(field->hasWall(5,1, utils::UP)); //0
 
 	return field;
 }
@@ -126,7 +148,10 @@ void loop() {
 	pacman p;
     p.clearScreen();
 
-	pacman_renderer* render = new pacman_renderer(p.getDriver(), p.genTestField(10,15));
+    pacmanField* f = p.genTestField(10,15);
+	
+	p.setField(f);
+	pacman_renderer* render = new pacman_renderer(p.getDriver(), p.getField() );
 	p.setRenderer(render);
     logger.println("Renderer added");
     

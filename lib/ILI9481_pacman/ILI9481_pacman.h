@@ -20,13 +20,12 @@ public:
 	void drawPacman(renderer_elem_pm* pm_prop, utils::direction dir, uint16_t);
 
 	void drawMonsterInit(renderer_elem_monster*);
-	void drawMonster(renderer_elem_monster*, uint16_t bg_color);
-	void drawMonster1(renderer_elem_monster*, uint16_t bg_color);
+	void drawMonster(renderer_elem_monster*, utils::direction dir, uint16_t bg_color);
 	
 	void cleanUpMovingElem(renderer_elem*, utils::direction, uint16_t bg_color);
 
-	void drawVertWall(renderer_elem_wall*, uint8_t tileSize);
-	void drawHorWall(renderer_elem_wall*, uint8_t tileSize);
+	void drawVertWall(renderer_elem_wall*, uint8_t tileSize, uint8_t wall_width);
+	void drawHorWall(renderer_elem_wall*, uint8_t tileSize, uint8_t wall_width);
 
 };
 

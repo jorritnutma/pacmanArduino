@@ -8,9 +8,10 @@ class pacmanField
     const static uint8_t MAX_H_LINES = 32;
     const static uint8_t MAX_V_LINES = 16;
     public:
+        const static uint8_t MAX_NUMBER_MONSTERS = 6;
         pacmanField(uint8_t, uint8_t, utils::position, utils::position);
         virtual ~pacmanField();
-        bool hasWall(uint8_t x, uint8_t y, utils::direction dir);
+        bool hasWall(uint8_t x, uint8_t y, int dir);
         void assignVWall(uint16_t, uint16_t, uint8_t);
         void assignHWall(uint16_t, uint8_t);
         uint8_t getWidth(){return x_tiles;}

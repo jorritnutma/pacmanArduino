@@ -15,18 +15,25 @@ class pacman
         pacmanField* loadField();
         pacmanField* genTestField(uint8_t, uint8_t);
         void setRenderer(pacman_renderer* renderer){render = renderer;}
+        void setField(pacmanField* pm_field){field = pm_field;}
+        pacmanField* getField(){return field;}
         void pm_border_test();
         void clearScreen();
         Driver* getDriver(){return driver;}
         void init();
+        utils::direction moveElementRandom(utils::position, utils::direction);
 
     protected:
 
     private:
         Driver* driver;
         pacman_renderer* render;
+        pacmanField* field;
         utils::position pm_pos;
         utils::direction pm_dir;
+        utils::position monster_pos[pacmanField::MAX_NUMBER_MONSTERS];
+        utils::direction monster_dir[pacmanField::MAX_NUMBER_MONSTERS];
+        utils::position monster_prev_pos[pacmanField::MAX_NUMBER_MONSTERS];
 };
 
 #endif // PACMAN_H
