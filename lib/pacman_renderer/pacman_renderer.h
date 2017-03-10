@@ -22,6 +22,7 @@ private:
     renderer_elem_monster* monster_prop[pacmanField::MAX_NUMBER_MONSTERS];
     uint8_t wall_width;
     uint8_t calculateTileSize(uint16_t,uint16_t);
+    utils::position determineNewFieldPos(utils::direction, renderer_elem*);
     
 public :
     pacman_renderer(Driver*, pacmanField*);

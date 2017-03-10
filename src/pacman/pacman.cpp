@@ -12,8 +12,12 @@ Serial_logger logger;
 pacman::pacman()
 {
     driver = new ILI9481_pacman();
-    pm_pos = {0,0};
+
+    //this information should be provided with the field. Only for testing that it is places here
     pm_dir = utils::DOWN;
+    monster_pos[0] = {4,6};
+    monster_prev_pos[0] = {0,0};
+    monster_dir[0] = utils::DOWN;
 }
 
 pacman::~pacman()
@@ -88,37 +92,38 @@ utils::direction pacman::moveElementRandom(utils::position pos, utils::direction
 
 pacmanField* pacman::genTestField(uint8_t width, uint8_t height){
 	utils::position m_pos = {4,6};
-    utils::position pm_pos = {0,0};
+    utils::position pm_pos = {0,6};
 	pacmanField* field = new pacmanField(width, height, pm_pos, m_pos);
 					//	 10       1
 	field->assignHWall(0b1111111111, 0);
-	field->assignHWall(0b0111111110, 1);
-	field->assignHWall(0b0011111100, 2);
-	field->assignHWall(0b0111111100, 3);
-	field->assignHWall(0b0100111100, 4);
-	field->assignHWall(0b0100111100, 5);
-	field->assignHWall(0b0100100100, 6);
-	field->assignHWall(0b0110001110, 7);
-	field->assignHWall(0b0100001100, 8);
-	field->assignHWall(0b0100111100, 9);
-	field->assignHWall(0b0100111100, 10);
-	field->assignHWall(0b0100111100, 11);
-	field->assignHWall(0b0100111100, 12);
-	field->assignHWall(0b0100111100, 13);
-	field->assignHWall(0b0111111110, 14);
-	field->assignHWall(0b0100111100, 15);
+    field->assignHWall(0b0011011010, 1);
+    field->assignHWall(0b0011110010, 2);
+    field->assignHWall(0b0001101010, 3);
+    field->assignHWall(0b0001011000, 4);
+    field->assignHWall(0b0001010010, 5);
+    field->assignHWall(0b1010101010, 6);
+    field->assignHWall(0b0110001000, 7);
+    field->assignHWall(0b0110001000, 8);
+    field->assignHWall(0b1010101010, 9);
+    field->assignHWall(0b0001010010, 10);
+    field->assignHWall(0b0001011000, 11);
+    field->assignHWall(0b0001101010, 12);
+    field->assignHWall(0b0011110010, 13);
+    field->assignHWall(0b0011011010, 14);
+    field->assignHWall(0b1111111111, 15);
 	
 					//   15            1
 	field->assignVWall(0b111111111111111, 0, 0);
-	field->assignVWall(0b011111111111110, 0, 1);
-	field->assignVWall(0b011100001111000, 0, 2);
-	field->assignVWall(0b011100001111000, 0, 3);
-	field->assignVWall(0b011100111111000, 0, 4);
-	field->assignVWall(0b011100101111000, 0, 5);
-	field->assignVWall(0b011100000111000, 0, 6);
-	field->assignVWall(0b011100001111000, 0, 7);
-	field->assignVWall(0b011100001111000, 0, 8);
-	field->assignVWall(0b011111111111110, 0, 9);
+    field->assignVWall(0b011011010110110, 0, 1);
+    field->assignVWall(0b010111000111010, 0, 2);
+    field->assignVWall(0b000010010010000, 0, 3);
+    field->assignVWall(0b000010111010000, 0, 4);
+    field->assignVWall(0b000010101010000, 0, 5);
+    field->assignVWall(0b000001010100000, 0, 6);
+    field->assignVWall(0b011011010110110, 0, 7);
+    field->assignVWall(0b010110111011010, 0, 8);
+    field->assignVWall(0b010110111011010, 0, 9);
+    field->assignVWall(0b111111111111111, 0, 10);
 
 	logger.println(field->hasWall(0,0, utils::LEFT)); //0
 	logger.println(field->hasWall(0,31, utils::LEFT)); //1

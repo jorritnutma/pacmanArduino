@@ -83,8 +83,7 @@ utils::position pacman_renderer::drawPacman(utils::direction dir){
   
   pm_prop->updatePosition(dir, tileSize, wall_width);
   
-  utils::position pos_n = {pm_prop->getXpos() / tileSize , pm_prop->getYpos() / tileSize};
-  return pos_n;
+ return determineNewFieldPos(dir, pm_prop);
 }
 
 utils::position pacman_renderer::drawMonster(utils::direction dir){
@@ -94,15 +93,27 @@ utils::position pacman_renderer::drawMonster(utils::direction dir){
 
   prop->updatePosition(dir, tileSize, wall_width);
   
-  utils::position pos_n = {prop->getXpos() / tileSize , prop->getYpos() / tileSize};
-  return pos_n;
+  return determineNewFieldPos(dir, prop);
+}
+
+utils::position pacman_renderer::determineNewFieldPos(utils::direction dir, renderer_elem* prop){
+
+    int16_t x_offset = 0, y_offset = 0;
+
+    if(dir == utils::UP){
+        y_offset = prop->getSize();
+    }
+    else if (dir == utils::LEFT){
+        x_offset = prop->getSize();
+    }
+    utils::position pos_n = {(prop->getXpos() + x_offset) / tileSize , (prop->getYpos() + y_offset) / tileSize};
+    return pos_n;
 }
 
 /* MORE OR LESS OBSOLETE FUNCTIONS */
 
 // Draw a circle outline
-void pacman_renderer::drawCircle(int16_t x0, int16_t y0, int16_t r,
- uint16_t color) {
+void pacman_renderer::drawCircle(int16_t x0, int16_t y0, int16_t r,uint16_t color) {
   int16_t f = 1 - r;
   int16_t ddF_x = 1;
   int16_t ddF_y = -2 * r;

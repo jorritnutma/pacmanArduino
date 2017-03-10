@@ -158,7 +158,7 @@ void ILI9481_pacman::cleanUpMovingElem(renderer_elem* prop, utils::direction dir
     if (prop->getTurnLeftover() > 0){
       switch (prop->getTurnPrevDir()){
         case utils::UP :
-          Rectf(x + prop->getTurnLeftover(), y - left_current_dir, prop->getSize(), prop->getTurnLeftover(), bg_color);
+          Rectf(x - prop->getTurnLeftover(), y + prop->getSize(), prop->getSize(), prop->getTurnLeftover(), bg_color);
         break;
         case utils::DOWN :
           Rectf(x - left_current_dir, y - prop->getTurnLeftover(), prop->getSize(), prop->getTurnLeftover(), bg_color);

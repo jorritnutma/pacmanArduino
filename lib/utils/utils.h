@@ -32,8 +32,8 @@ public:
 
 	struct position
 	 {
-		int x;
-		int y;	
+        uint16_t x;
+        uint16_t y;
 	 };
 	
 	enum direction 
@@ -41,7 +41,7 @@ public:
 		UP,
 		LEFT,
 		RIGHT,
-		DOWN
+        DOWN
 	};
 	
 	// enum colors
