@@ -20,6 +20,8 @@ private:
     uint16_t bg_color;
     renderer_elem_pm* pm_prop;
     renderer_elem_monster* monster_prop[pacmanField::MAX_NUMBER_MONSTERS];
+    renderer_elem* dot_prop;
+    renderer_elem* special_dot_prop;
     uint8_t wall_width;
     uint8_t calculateTileSize(uint16_t,uint16_t);
     utils::position determineNewFieldPos(utils::direction, renderer_elem*);
@@ -29,8 +31,9 @@ public :
 	uint16_t getTileSize(){return tileSize;}
     void clearScreen(int color){tft->LCD_Clear(color);}
     void clearScreen(){tft->LCD_Clear(colors::BLACK);}
+    void drawDots(pacmanField* field);
     utils::position drawPacman(utils::direction);
-    utils::position drawMonster(utils::direction);
+    utils::position drawMonster(utils::direction, pacmanField::dot dotType);
     void drawWalls(pacmanField*);
     void checkBorders(pacmanField* field);
     

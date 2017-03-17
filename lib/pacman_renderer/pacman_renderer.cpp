@@ -10,9 +10,13 @@ pacman_renderer::pacman_renderer(Driver* driver, pacmanField* field){
     tileSize = calculateTileSize(field->getWidth(), field->getHeight() );
     wall_width = 2;
 
+    dot_prop = new renderer_elem(colors::ORANGE);
+    dot_prop->setSize(2);
+
     drawWalls(field);
     checkBorders(field);
 
+    drawDots(field);
                 //renderer_elem_pm(size, stepSize, color)
     pm_prop = new renderer_elem_pm(16, 5, colors::YELLOW);
     uint16_t x0 = tileSize * field->getPacmanStart().x + ((tileSize - wall_width - pm_prop->getSize()) >> 1) + wall_width;
@@ -26,12 +30,12 @@ pacman_renderer::pacman_renderer(Driver* driver, pacmanField* field){
 
     x0 = tileSize * field->getMonsterStart().x + ((tileSize - wall_width - pm_prop->getSize()) >> 1) + wall_width;
     y0 = tileSize * field->getMonsterStart().y + ((tileSize - wall_width -  pm_prop->getSize()) >> 1) + wall_width;
-    monster_prop[0] = new renderer_elem_monster(16,4,colors::WHITE);
+    monster_prop[0] = new renderer_elem_monster(16,3,colors::WHITE);
     monster_prop[0]->setXpos(x0);
     monster_prop[0]->setYpos(y0);
     tft->drawMonsterInit(monster_prop[0]);
 
-    monster_prop[1] = new renderer_elem_monster(16,2,colors::WHITE);
+    monster_prop[1] = new renderer_elem_monster(16,3,colors::WHITE);
     monster_prop[1]->setXpos(x0);
     monster_prop[1]->setYpos(y0);
     
@@ -76,6 +80,13 @@ uint8_t pacman_renderer::calculateTileSize(uint16_t fieldWidth, uint16_t fieldHe
   return h < w ? h : w;
 }
 
+void pacman_renderer::drawDots(pacmanField* field){
+    for(int i = 0; i < field->getWidth(); i++){
+        for(int j = 0; j < field->getHeight(); j++){
+            tft->fillCircle(i * tileSize + (tileSize >> 1) + wall_width, j * tileSize + (tileSize >> 1) + wall_width, dot_prop->getSize(), dot_prop->getColor());
+        }
+    }
+}
 
 utils::position pacman_renderer::drawPacman(utils::direction dir){
   
@@ -86,14 +97,56 @@ utils::position pacman_renderer::drawPacman(utils::direction dir){
  return determineNewFieldPos(dir, pm_prop);
 }
 
-utils::position pacman_renderer::drawMonster(utils::direction dir){
+utils::position pacman_renderer::drawMonster(utils::direction dir, pacmanField::dot dotType){
 
-  renderer_elem_monster* prop = monster_prop[0];
-  tft->drawMonster(prop, dir, colors::BLACK);
+    renderer_elem_monster* prop = monster_prop[0];
 
-  prop->updatePosition(dir, tileSize, wall_width);
+    uint8_t x = (prop->getXpos() + (prop->getSize() >> 1))/ tileSize;
+    uint8_t y = (prop->getYpos() + (prop->getSize() >> 1))/ tileSize;
+    switch (prop->getPrevDir()){
+    case utils::DOWN :
+        y =  (prop->getYpos() - prop->getStepSize() + (prop->getSize() >> 1))/ tileSize;
+        break;
+    case utils::UP :
+        y =  (prop->getYpos() + prop->getStepSize() + (prop->getSize() >> 1))/ tileSize;
+        break;
+    case utils::RIGHT :
+        x = (prop->getXpos() - prop->getStepSize() + (prop->getSize() >> 1))/ tileSize;
+        break;
+    case utils::LEFT :
+        x = (prop->getXpos() + prop->getStepSize() + (prop->getSize() >> 1))/ tileSize;
+        break;
+    }
+
+    tft->drawMonster(prop, dir, colors::BLACK);
+    uint16_t dot_x = x * tileSize + (tileSize >> 1 ) + wall_width;
+    uint16_t dot_y = y * tileSize + (tileSize >> 1) + wall_width;
+    switch (dotType){
+    case pacmanField::dot::yes :
+        if( dir == utils::DOWN && prop->getYpos() >= dot_y){
+            tft->fillCircle(dot_x, dot_y, dot_prop->getSize(), dot_prop->getColor());
+        }
+        else if( dir == utils::UP && prop->getYpos() + prop->getSize() <= dot_y){
+            tft->fillCircle(dot_x, dot_y, dot_prop->getSize(), dot_prop->getColor());
+        }
+        else if( dir == utils::LEFT && prop->getXpos() + prop->getSize() <= dot_x){
+            tft->fillCircle(dot_x, dot_y, dot_prop->getSize(), dot_prop->getColor());
+        }
+        else if( dir == utils::RIGHT && prop->getXpos()>= dot_x){
+            tft->fillCircle(dot_x, dot_y, dot_prop->getSize(), dot_prop->getColor());
+        }
+        break;
+    case pacmanField::dot::special :
+        //tft->fillCircle(prop->getXpos(), prop->getYpos(), special_dot_prop->getSize(), special_dot_prop->getColor());
+        break;
+    default :
+        break;
+    }
+
+
+    prop->updatePosition(dir, tileSize, wall_width);
   
-  return determineNewFieldPos(dir, prop);
+    return determineNewFieldPos(dir, prop);
 }
 
 utils::position pacman_renderer::determineNewFieldPos(utils::direction dir, renderer_elem* prop){
